@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Dictionary</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:       #2e2820;
+  --surface:  #362f26;
+  --surface2: #3e362c;
+  --border:   #4a4038;
+  --border2:  #564c42;
+  --ink:      #f0e8d8;
+  --ink2:     #c8bca8;
+  --ink3:     #8a7e6e;
+  --accent:   #7a5c3a;
+  --accent2:  #a07848;
+  --warm:     #c4914a;
+  --warm-dim: #c4914a18;
+  --sage:     #6a8060;
+  --sage-dim: #6a806018;
+  --rust:     #9a4a38;
+  --rust-dim: #9a4a3818;
+  --clay:     #b86840;
+  --clay-dim: #b8684018;
+  --sand:     #c8a870;
+  --sand-dim: #c8a87018;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+  font-size: 15px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+.wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 80px 32px 120px;
+  position: relative; z-index: 1;
+}
+
+header { margin-bottom: 72px; animation: rise .8s cubic-bezier(.16,1,.3,1) both; }
+
+.eyebrow {
+  font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--accent2); margin-bottom: 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent2); }
+
+h1 {
+  font-family: 'Lora', serif;
+  font-size: clamp(48px, 7vw, 80px);
+  font-weight: 500;
+  line-height: .95;
+  letter-spacing: -.02em;
+  color: var(--ink);
+}
+h1 em { font-style: italic; color: var(--accent); }
+
+.sub {
+  margin-top: 20px;
+  font-size: 11px; line-height: 1.9; color: var(--ink3);
+  max-width: 440px;
+}
+.sub code { color: var(--accent); font-size: 11px; }
+
+.nav-wrap { margin-bottom: 56px; animation: rise .8s .1s cubic-bezier(.16,1,.3,1) both; }
+.nav-group { margin-bottom: 14px; }
+.nav-label { font-size: 9px; letter-spacing: .25em; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pills a {
+  text-decoration: none; font-size: 10px; letter-spacing: .08em;
+  text-transform: uppercase; padding: 5px 12px;
+  border: 1px solid var(--border2); border-radius: 2px;
+  color: var(--ink3); background: var(--surface); transition: all .2s;
+}
+.pills a:hover { border-color: var(--accent); color: var(--accent); background: var(--warm-dim); }
+
+.divider {
+  display: flex; align-items: center; gap: 16px;
+  margin: 56px 0 16px;
+  font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--ink3);
+}
+.divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.cards { display: flex; flex-direction: column; gap: 1px; }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-top: none;
+  position: relative; overflow: hidden;
+  animation: rise .6s cubic-bezier(.16,1,.3,1) both;
+}
+.cards .card:first-child { border-top: 1px solid var(--border); }
+.card:nth-child(2) { animation-delay: .06s; }
+.card:nth-child(3) { animation-delay: .12s; }
+.card:nth-child(4) { animation-delay: .18s; }
+.card-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+
+.card-top {
+  padding: 22px 24px 20px 28px; border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start;
+}
+.card-num { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
+.card-title {
+  font-family: 'Lora', serif; font-size: 17px; font-weight: 500;
+  color: var(--ink); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.cmd { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400; padding: 2px 8px; border-radius: 2px; border: 1px solid; }
+.tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.tag { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; border: 1px solid; }
+.badge-wip {
+  font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 2px;
+  border: 1px solid var(--sand); background: var(--sand-dim); color: var(--accent2); margin-left: 4px;
+}
+.usage {
+  font-size: 10px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 2px;
+  background: var(--surface2); color: var(--ink3); align-self: flex-start; min-width: 0;
+}
+.usage strong { display: block; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink3); margin-bottom: 4px; font-weight: 400; }
+.usage code { color: var(--accent); font-size: 10px; word-break: break-all; }
+
+.sec { padding: 18px 24px 18px 28px; border-bottom: 1px solid var(--border); }
+.sec:last-child { border-bottom: none; }
+.sec-lbl { font-size: 9px; letter-spacing: .25em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
+.desc { font-size: 13px; line-height: 1.9; color: var(--ink2); }
+
+.checklist { display: flex; flex-direction: column; gap: 5px; }
+.ci {
+  display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--ink2);
+  padding: 7px 11px; background: var(--surface2); border: 1px solid var(--border); border-radius: 2px;
+}
+.cb { width: 13px; height: 13px; flex-shrink: 0; border: 1px solid var(--border2); border-radius: 2px; display: flex; align-items: center; justify-content: center; }
+.ci.req .cb { border-color: var(--sage); background: var(--sage-dim); }
+
+.code-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.code-path { font-size: 10px; color: var(--ink3); }
+pre {
+  background: #1a1510; border: 1px solid #3a3028; border-radius: 2px;
+  padding: 18px 20px; overflow-x: auto; font-size: 12px; line-height: 1.8; color: #d0c4b0; tab-size: 2;
+}
+.copy-btn {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 2px; color: var(--ink3);
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+  padding: 4px 10px; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 4px;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+.copy-btn.ok { border-color: var(--sage); color: var(--sage); }
+
+.k { color: #c4914a; } .s { color: #a0b880; } .c { color: #6a6058; }
+.v { color: #d4a060; } .e { color: #c07858; } .h { color: #90a880; }
+
+footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.fl { font-size: 10px; color: var(--ink3); }
+.fr { display: flex; align-items: baseline; gap: 6px; }
+.count { font-family: 'Lora', serif; font-size: 28px; font-weight: 500; color: var(--accent); }
+.count-label { font-size: 10px; color: var(--ink3); }
+
+.c-warm .card-bar { background: var(--warm); }
+.c-warm .cmd { color: var(--warm); border-color: #c4914a40; background: var(--warm-dim); }
+.c-sage .card-bar { background: var(--sage); }
+.c-sage .cmd { color: var(--sage); border-color: #6a806040; background: var(--sage-dim); }
+.c-rust .card-bar { background: var(--rust); }
+.c-rust .cmd { color: var(--rust); border-color: #9a4a3840; background: var(--rust-dim); }
+.c-clay .card-bar { background: var(--clay); }
+.c-clay .cmd { color: var(--clay); border-color: #b8684040; background: var(--clay-dim); }
+.c-sand .card-bar { background: var(--sand); }
+.c-sand .cmd { color: var(--sand); border-color: #c8a87040; background: var(--sand-dim); }
+
+.t-w { background: var(--warm-dim); border-color: #c4914a30; color: var(--warm); }
+.t-s { background: var(--sage-dim); border-color: #6a806030; color: var(--sage); }
+.t-r { background: var(--rust-dim); border-color: #9a4a3830; color: var(--rust); }
+.t-c { background: var(--clay-dim); border-color: #b8684030; color: var(--clay); }
+.t-d { background: var(--sand-dim); border-color: #c8a87030; color: var(--sand); }
+
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 600px) {
+  .card-top { grid-template-columns: 1fr; }
+  .usage { white-space: normal; }
+  .sec { padding: 16px 18px 16px 22px; }
+  .card-top { padding: 18px 18px 16px 22px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Prompt Dictionary</div>
+  <h1>Your<br><em>Prompts.</em></h1>
+  <p class="sub">Ready-to-use skills for Claude Code. Save to <code>~/.claude/skills/</code> and invoke with <code>/name</code>.</p>
+</header>
+
+<div class="nav-wrap">
+  <div class="nav-group">
+    <div class="nav-label">PR Flow</div>
+    <div class="pills">
+      <a href="#revisor">/reviewer</a>
+      <a href="#criar-pr">/create-pr</a>
+      <a href="#responder-pr">/reply-pr</a>
+      <a href="#abrir-pr">/open-pr</a>
+    </div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">SDD Flow</div>
+    <div class="pills">
+      <a href="#sdd-init">/sdd-init</a>
+      <a href="#sdd-install">/sdd-install</a>
+      <a href="#sdd-start">/sdd-start</a>
+      <a href="#sdd-spec">/sdd-spec</a>
+      <a href="#sdd-plan">/sdd-plan</a>
+      <a href="#sdd-build">/sdd-build</a>
+      <a href="#sdd-hub">/sdd-hub</a>
+      <a href="#sdd-fix">/sdd-fix</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PR FLOW ═══════════ -->
+<div class="divider">PR Flow</div>
+<div class="cards">
+
+<!-- /reviewer -->
+<div class="card c-warm" id="revisor">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">PR · 001</div>
+      <div class="card-title">Code Review <span class="cmd">/reviewer</span></div>
+      <div class="tags">
+        <span class="tag t-r">🐛 Bugs</span>
+        <span class="tag t-w">⚠️ Style</span>
+        <span class="tag t-d">⚡ Performance</span>
+        <span class="tag t-s">🧪 Tests</span>
+      </div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/reviewer [pr-link]</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Reviews Pull Requests as a senior engineer — flags bugs, style issues, performance opportunities, and test coverage gaps. Before executing, shows the full prompt and waits for your confirmation.</p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/reviewer/SKILL.md</code></div>
+    <div class="code-header">
+      <span class="code-path"></span>
+      <button class="copy-btn" onclick="cp(this,'c-revisor')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-revisor"><span class="c">---</span>
+<span class="k">name</span>: reviewer
+<span class="k">description</span>: Reviews PRs in GitHub Review style
+<span class="c">---</span>
+
+Before reviewing, show me the full prompt you will use and wait
+for my confirmation. Only proceed after I reply <span class="s">"go ahead"</span>.
+
+You are a senior engineer reviewing a Pull Request. Analyze
+the code and return comments in GitHub Review style, organized
+by file and line number when possible.
+
+For each issue found, use the format:
+
+<span class="h">**[FILE]**</span> `path/to/file.ext`
+<span class="h">**[LINE]**</span> 42 *(if applicable)*
+<span class="h">**[TYPE]**</span> 🐛 Bug | ⚠️ Style | ⚡ Performance | 🧪 Tests
+<span class="h">**[SEVERITY]**</span> Critical / Important / Suggestion
+<span class="h">**[COMMENT]**</span> Description of the issue.
+<span class="h">**[SUGGESTION]**</span> How to fix it.
+
+<span class="e">### Review Summary</span>
+- ✅ What looks good
+- 🔴 Critical (blocks merge)
+- 🟡 Important
+- 💡 Optional suggestions
+
+<span class="e">### Verdict</span>
+[ ] Approved  [ ] Approved with comments  [ ] Changes required
+
+Focus: bugs, style, performance, test coverage.
+
+PR: <span class="v">$ARGUMENTS</span></pre>
+  </div>
+</div>
+
+<!-- /create-pr -->
+<div class="card c-clay" id="criar-pr">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">PR · 002</div>
+      <div class="card-title">Create PR <span class="cmd">/create-pr</span></div>
+      <div class="tags">
+        <span class="tag t-c">📋 SDD</span>
+        <span class="tag t-s">✅ Checklist</span>
+        <span class="tag t-d">📸 Evidence</span>
+        <span class="tag t-w">🏷️ Milestone</span>
+      </div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/create-pr [jira] [v1.0.0] [diff]</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Required checklist</div>
+    <div class="checklist">
+      <div class="ci req"><div class="cb"><svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Automated tests passing</div>
+      <div class="ci req"><div class="cb"><svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Manually tested</div>
+      <div class="ci req"><div class="cb"><svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Docs / MDs updated</div>
+      <div class="ci req"><div class="cb"><svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Code quality / lint ok</div>
+      <div class="ci req"><div class="cb"><svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Evidence included — screenshots, video, Bugsnag, tracker</div>
+      <div class="ci"><div class="cb"></div>No <code>console.log</code> or debug code</div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/create-pr/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-criar-pr')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-criar-pr"><span class="c">---</span>
+<span class="k">name</span>: create-pr
+<span class="k">description</span>: Generates PR title, SDD description and full checklist
+<span class="c">---</span>
+
+You are a senior engineer who writes clear, standardized PR
+descriptions. From the Jira link, milestone and diff, generate
+a complete PR. If any data is missing, ask before continuing.
+
+<span class="e">## Title</span>
+
+Format: [TYPE-0000] Short clear description · Milestone: vX.X.X
+
+Types: <span class="v">BUG</span> | <span class="v">FEAT</span> | <span class="v">CHORE</span>
+
+<span class="e">## Description</span>
+
+<span class="h">### 🎯 Context</span>
+What motivated this change? Reference: [TYPE-0000](jira-link)
+
+<span class="h">### 🛠️ What was done</span>
+Objective bullet points of the main changes.
+
+<span class="h">### 🔍 Technical decisions</span>
+Trade-offs and discarded alternatives, if any.
+
+<span class="h">### 📸 Evidence</span>
+Screenshots, videos, Bugsnag/tracker links.
+⚠️ Required if it affects UI or user-visible behavior.
+
+<span class="e">## ✅ Checklist</span>
+
+- [ ] Automated tests passing
+- [ ] Manually tested
+- [ ] Docs / MDs updated (if applicable)
+- [ ] Code quality / lint ok
+- [ ] Evidence included (when required)
+- [ ] No `console.log` or debug code
+
+After generating, confirm: Jira type/number, milestone, evidence.
+
+Content: <span class="v">$ARGUMENTS</span></pre>
+  </div>
+</div>
+
+<!-- /reply-pr -->
+<div class="card c-sage" id="responder-pr">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">PR · 003</div>
+      <div class="card-title">Reply to PR <span class="cmd">/reply-pr</span></div>
+      <div class="tags">
+        <span class="tag t-s">💬 Review</span>
+        <span class="tag t-w">🎯 Argument</span>
+        <span class="tag t-r">✅ Resolution</span>
+      </div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/reply-pr [comment]</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Analyzes a code review comment and suggests the best reply — agreeing and fixing, arguing technically, or asking for more context. Always professional and direct.</p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/reply-pr/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-responder-pr')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-responder-pr"><span class="c">---</span>
+<span class="k">name</span>: reply-pr
+<span class="k">description</span>: Suggests replies to code review comments
+<span class="c">---</span>
+
+You are a senior engineer responding to a code review comment.
+Analyze the comment and suggest the best reply.
+
+<span class="h">**[TYPE]**</span>
+- ✅ Agree → will fix
+- 🤔 Partially agree → will adapt
+- 💡 Disagree → have a technical argument
+- ❓ Need more context
+
+<span class="h">**[SUGGESTED REPLY]**</span>
+Write the reply directly — professional and objective.
+If fixing, mention what will change.
+If arguing, cite references or justify technically.
+If needing context, ask a specific question.
+
+<span class="h">**[ACTION]**</span>
+What needs to be done in the code (or no action needed).
+
+Keep a collaborative tone — code review is about the code,
+not the person.
+
+Comment: <span class="v">$ARGUMENTS</span></pre>
+  </div>
+</div>
+
+<!-- /open-pr -->
+<div class="card c-sand" id="abrir-pr">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">PR · 004</div>
+      <div class="card-title">Open PR <span class="cmd">/open-pr</span></div>
+      <div class="tags">
+        <span class="tag t-d">🚀 GitHub</span>
+        <span class="tag t-w">🏷️ Labels</span>
+        <span class="tag t-s">👥 Reviewers</span>
+      </div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/open-pr [branch] [base]</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Opens the PR on GitHub via CLI using the title and description generated by <code style="color:var(--accent2)">/create-pr</code>. Suggests labels and milestone based on the task type.</p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/open-pr/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-abrir-pr')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-abrir-pr"><span class="c">---</span>
+<span class="k">name</span>: open-pr
+<span class="k">description</span>: Opens PR on GitHub with title, description and metadata
+<span class="k">allowed-tools</span>: Bash
+<span class="c">---</span>
+
+Use the title and description already generated by /create-pr.
+If not ready, run /create-pr first.
+
+<span class="e">## Steps</span>
+
+1. Check authentication: `!gh auth status`
+2. Confirm current branch: `!git branch --show-current`
+3. Open the PR:
+
+```bash
+gh pr create \
+  --title "[TYPE-0000] Change title" \
+  --body "$(cat pr-description.md)" \
+  --base main \
+  --milestone "vX.X.X" \
+  --label "bug|feature|chore" \
+  --assignee "@me"
+```
+
+4. Display the link of the created PR.
+
+<span class="e">## Labels by type</span>
+<span class="v">FEAT</span> → `feature` · <span class="v">BUG</span> → `bug` · <span class="v">CHORE</span> → `chore`
+
+If gh CLI is not installed:
+`brew install gh && gh auth login`
+
+Branch and base: <span class="v">$ARGUMENTS</span></pre>
+  </div>
+</div>
+
+</div><!-- /cards PR -->
+
+<!-- ═══════════ SDD FLOW ═══════════ -->
+<div class="divider">SDD Flow</div>
+<div class="cards">
+
+<!-- /sdd-init -->
+<div class="card c-sand" id="sdd-init">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">SDD · 001</div>
+      <div class="card-title">Init <span class="cmd">/sdd-init</span> <span class="badge-wip">⚙️ configure</span></div>
+      <div class="tags"><span class="tag t-d">🔧 Setup</span><span class="tag t-w">📦 Kit</span></div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/sdd-init [project]</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Initializes the SDD kit structure in the project. <strong style="color:var(--accent2)">Replace the "Team-specific kit" block with your team's commands.</strong></p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-init/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-sdd-init')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-sdd-init"><span class="c">---</span>
+<span class="k">name</span>: sdd-init
+<span class="k">description</span>: Initializes the SDD kit structure in the project
+<span class="k">allowed-tools</span>: Bash, Write
+<span class="c">---</span>
+
+Initialize the base SDD structure for the given project.
+
+<span class="e">## Structure to create</span>
+
+```
+.sdd/
+  spec.md       ← generated by /sdd-spec
+  plan.md       ← generated by /sdd-plan
+  hub.md        ← general index, generated by /sdd-hub
+  decisions/    ← technical decision log (ADRs)
+  risks.md      ← risks and dependencies
+```
+
+<span class="e">## Team-specific kit</span>
+
+<span class="v"># ⚠️ Replace with your team's commands:</span>
+<span class="v"># !your-init-command $ARGUMENTS</span>
+
+<span class="e">## After creating the structure</span>
+
+- Confirm directories were created
+- Instruct to run /sdd-install next
+
+Project: <span class="v">$ARGUMENTS</span></pre>
+  </div>
+</div>
+
+<!-- /sdd-install -->
+<div class="card c-sand" id="sdd-install">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">SDD · 002</div>
+      <div class="card-title">Install <span class="cmd">/sdd-install</span> <span class="badge-wip">⚙️ configure</span></div>
+      <div class="tags"><span class="tag t-d">📦 Deps</span><span class="tag t-w">🔧 Kit</span></div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/sdd-install</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Installs the SDD kit dependencies. <strong style="color:var(--accent2)">Replace the install block with your team's actual commands.</strong></p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-install/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-sdd-install')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-sdd-install"><span class="c">---</span>
+<span class="k">name</span>: sdd-install
+<span class="k">description</span>: Installs SDD kit dependencies
+<span class="k">allowed-tools</span>: Bash
+<span class="c">---</span>
+
+Install the dependencies required for the SDD kit.
+
+<span class="e">## Pre-install checks</span>
+
+1. Confirm /sdd-init was run (.sdd/ exists)
+2. Check the environment (node, python, etc. per kit)
+
+<span class="e">## Kit installation</span>
+
+<span class="v"># ⚠️ Replace with your team's actual commands:</span>
+<span class="v"># !npm install your-sdd-kit</span>
+<span class="v"># !your-cli install</span>
+
+<span class="e">## After installing</span>
+
+- Confirm installation was successful
+- Instruct next step: /sdd-start
+- If there's an error, diagnose and suggest a fix</pre>
+  </div>
+</div>
+
+<!-- /sdd-start -->
+<div class="card c-warm" id="sdd-start">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">SDD · 003</div>
+      <div class="card-title">Start <span class="cmd">/sdd-start</span></div>
+      <div class="tags"><span class="tag t-w">🚀 Kickoff</span><span class="tag t-c">🎯 Goal</span></div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/sdd-start [idea]</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Entry point for the SDD flow. Receives the idea or problem in plain language, confirms understanding, and sets the stage for /sdd-spec.</p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-start/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-sdd-start')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-sdd-start"><span class="c">---</span>
+<span class="k">name</span>: sdd-start
+<span class="k">description</span>: Kicks off the SDD flow from an idea or problem
+<span class="c">---</span>
+
+You are a senior engineer starting a Software Design Document.
+Receive the idea and structure the beginning of the SDD.
+
+<span class="e">## What to do</span>
+
+1. Paraphrase the problem to confirm understanding
+2. Identify the work type:
+   - New feature · Refactor · Recurring fix · Spike
+
+3. Create `.sdd/hub.md` with the header:
+
+```md
+# SDD — [Feature/Problem Name]
+**Status:** 🟡 In progress
+**Started:** [date]
+**Type:** feature | refactor | fix | spike
+
+## Summary
+[Problem paraphrase in 2-3 lines]
+
+## Next steps
+- [ ] /sdd-spec — gather specifications
+- [ ] /sdd-plan — plan execution
+- [ ] /sdd-build — develop
+```
+
+4. Instruct next step: <span class="h">/sdd-spec</span>
+
+Idea: <span class="v">$ARGUMENTS</span></pre>
+  </div>
+</div>
+
+<!-- /sdd-spec -->
+<div class="card c-clay" id="sdd-spec">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">SDD · 004</div>
+      <div class="card-title">Spec <span class="cmd">/sdd-spec</span></div>
+      <div class="tags"><span class="tag t-c">📐 Specs</span><span class="tag t-w">💼 Business</span><span class="tag t-r">⚙️ Technical</span></div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/sdd-spec [context]</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Generates technical and non-technical specifications. Asks business questions to fill gaps before producing the final document.</p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-spec/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-sdd-spec')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-sdd-spec"><span class="c">---</span>
+<span class="k">name</span>: sdd-spec
+<span class="k">description</span>: Generates technical and non-technical specs, asks business questions
+<span class="c">---</span>
+
+Read `.sdd/hub.md` to understand the current context.
+
+<span class="e">## Phase 1 — Business questions</span>
+
+Before generating specs, ask up to 5 essential questions:
+- Who are the affected users?
+- What is the success criterion for this delivery?
+- Are there deadline constraints or external dependencies?
+- Is there a business decision that limits solutions?
+- What metrics will validate the result?
+
+Wait for answers before continuing.
+
+<span class="e">## Phase 2 — Generate `.sdd/spec.md`</span>
+
+```md
+# Specifications — [Name]
+
+## Context and Problem
+## Non-Technical Requirements
+## Technical Requirements
+## Acceptance Criteria
+- [ ] [Verifiable behavior]
+## Estimate
+- Complexity: S / M / L / XL
+- Effort: X days/sprints
+```
+
+After generating, instruct: <span class="h">/sdd-plan</span>
+
+Context: <span class="v">$ARGUMENTS</span></pre>
+  </div>
+</div>
+
+<!-- /sdd-plan -->
+<div class="card c-rust" id="sdd-plan">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">SDD · 005</div>
+      <div class="card-title">Plan <span class="cmd">/sdd-plan</span></div>
+      <div class="tags"><span class="tag t-r">📋 Tasks</span><span class="tag t-w">🏗️ Architecture</span><span class="tag t-c">⚠️ Risks</span></div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/sdd-plan</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Reads the spec and generates the full execution plan — broken-down tasks, architecture decisions, trade-offs, and mapped risks.</p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-plan/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-sdd-plan')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-sdd-plan"><span class="c">---</span>
+<span class="k">name</span>: sdd-plan
+<span class="k">description</span>: Generates execution plan, tasks and architecture
+<span class="c">---</span>
+
+Read `.sdd/spec.md` and `.sdd/hub.md`. Generate `.sdd/plan.md`.
+
+```md
+# Execution Plan — [Name]
+
+## Solution Architecture
+[Technical approach + ASCII diagram if needed]
+
+## Technical Decisions
+| Decision | Alternatives | Reason |
+|----------|-------------|--------|
+
+## Tasks
+### Phase 1 — [Name]
+- [ ] [TASK] Description · estimate: Xh
+
+## Risks and Dependencies
+| Risk | Prob. | Impact | Mitigation |
+|------|-------|--------|------------|
+
+## Execution order
+1. ...
+```
+
+Update the hub and instruct: <span class="h">/sdd-build</span></pre>
+  </div>
+</div>
+
+<!-- /sdd-build -->
+<div class="card c-sage" id="sdd-build">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">SDD · 006</div>
+      <div class="card-title">Build <span class="cmd">/sdd-build</span></div>
+      <div class="tags"><span class="tag t-s">⚙️ Dev</span><span class="tag t-c">✅ Tasks</span><span class="tag t-w">🧪 Tests</span></div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/sdd-build [task]</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Starts development following the /sdd-plan. Executes task by task, updates the hub with progress, and flags blockers.</p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-build/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-sdd-build')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-sdd-build"><span class="c">---</span>
+<span class="k">name</span>: sdd-build
+<span class="k">description</span>: Starts development following the SDD plan
+<span class="k">allowed-tools</span>: Read, Write, Bash, Grep, Glob
+<span class="c">---</span>
+
+Read `.sdd/plan.md` and `.sdd/spec.md` before starting.
+Execute tasks in the order defined in the plan.
+
+<span class="e">## Before each task</span>
+
+1. Read the task and confirm understanding
+2. Check that dependencies are complete
+
+<span class="e">## During development</span>
+
+- Follow project patterns (linting, naming, structure)
+- Write or update tests for each change
+- If you hit a blocker or an unplanned decision:
+  → Document in `.sdd/decisions/YYYY-MM-DD-name.md`
+  → Flag before proceeding
+
+<span class="e">## After each task</span>
+
+Update `.sdd/hub.md` marking progress.
+If a specific task is passed, focus only on it.
+
+Task: <span class="v">$ARGUMENTS</span></pre>
+  </div>
+</div>
+
+<!-- /sdd-hub -->
+<div class="card c-warm" id="sdd-hub">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">SDD · 007</div>
+      <div class="card-title">Hub <span class="cmd">/sdd-hub</span></div>
+      <div class="tags"><span class="tag t-w">🗺️ Overview</span><span class="tag t-s">📊 Status</span></div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/sdd-hub</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Displays and updates the SDD central index — status of each stage, decisions made, next steps, and links to all generated documents.</p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-hub/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-sdd-hub')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-sdd-hub"><span class="c">---</span>
+<span class="k">name</span>: sdd-hub
+<span class="k">description</span>: Displays and updates the SDD central index
+<span class="k">allowed-tools</span>: Read, Write
+<span class="c">---</span>
+
+Read all files in `.sdd/` and update the hub.
+
+```md
+# SDD Hub — [Project Name]
+
+**Overall status:** 🟡 In progress | ✅ Done | 🔴 Blocked
+**Last updated:** [date]
+
+## Stages
+| Stage      | Status | File         |
+|------------|--------|--------------|
+| /sdd-spec  | ✅     | .sdd/spec.md |
+| /sdd-plan  | ✅     | .sdd/plan.md |
+| /sdd-build | 🟡     | —            |
+
+## Task progress
+[current checklist from plan.md]
+
+## Logged decisions
+- [date] — [Decision] → .sdd/decisions/...
+
+## Active risks
+[risks not yet mitigated]
+
+## Next step
+→ [clear instruction]
+```
+
+Display the hub and signal the next step.</pre>
+  </div>
+</div>
+
+<!-- /sdd-fix -->
+<div class="card c-rust" id="sdd-fix">
+  <div class="card-bar"></div>
+  <div class="card-top">
+    <div>
+      <div class="card-num">SDD · 008</div>
+      <div class="card-title">Fix <span class="cmd">/sdd-fix</span></div>
+      <div class="tags"><span class="tag t-r">🐛 Fix</span><span class="tag t-d">📝 Log</span><span class="tag t-s">✅ Validation</span></div>
+    </div>
+    <div class="usage"><strong>Usage</strong><code>/sdd-fix [problem]</code></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Description</div>
+    <p class="desc">Fixes a specific problem found during or after /sdd-build. Logs the fix as a decision in the hub for traceability.</p>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-fix/SKILL.md</code></div>
+    <div class="code-header"><span></span>
+      <button class="copy-btn" onclick="cp(this,'c-sdd-fix')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+    </div>
+    <pre id="c-sdd-fix"><span class="c">---</span>
+<span class="k">name</span>: sdd-fix
+<span class="k">description</span>: Fixes a specific problem and logs it in the SDD
+<span class="k">allowed-tools</span>: Read, Write, Bash, Grep
+<span class="c">---</span>
+
+Read `.sdd/spec.md` and `.sdd/plan.md` before acting.
+
+<span class="e">## Diagnosis</span>
+
+1. Understand the problem: where, when, impact
+2. Identify the root cause (not the symptom)
+3. Check if it was listed in risks
+4. Confirm diagnosis before fixing
+
+<span class="e">## Fix</span>
+
+- Implement the minimal necessary fix
+- Do not refactor unrelated code
+- Add tests that cover the scenario
+- Verify it doesn't break other flows
+
+<span class="e">## Log</span>
+
+Create `.sdd/decisions/[date]-fix-[name].md`:
+
+```md
+# Fix — [Name]
+**Problem:** ...
+**Root cause:** ...
+**Solution:** ...
+**Tests added:** yes/no
+```
+
+Problem: <span class="v">$ARGUMENTS</span></pre>
+  </div>
+</div>
+
+</div><!-- /cards SDD -->
+
+<footer>
+  <div class="fl">Prompt Dictionary · 2026</div>
+  <div class="fr">
+    <span class="count">12</span>
+    <span class="count-label">prompts</span>
+  </div>
+</footer>
+
+</div><!-- /wrap -->
+<script>
+function cp(btn, id) {
+  navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
+    btn.classList.add('ok');
+    btn.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+    setTimeout(() => {
+      btn.classList.remove('ok');
+      btn.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy';
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
