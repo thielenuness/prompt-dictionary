@@ -4,273 +4,566 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prompt Dictionary</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
 :root {
-  --bg:       #2e2820;
-  --surface:  #362f26;
-  --surface2: #3e362c;
-  --border:   #4a4038;
-  --border2:  #564c42;
-  --ink:      #f0e8d8;
-  --ink2:     #c8bca8;
-  --ink3:     #8a7e6e;
-  --accent:   #7a5c3a;
-  --accent2:  #a07848;
-  --warm:     #c4914a;
-  --warm-dim: #c4914a18;
-  --sage:     #6a8060;
-  --sage-dim: #6a806018;
-  --rust:     #9a4a38;
-  --rust-dim: #9a4a3818;
-  --clay:     #b86840;
-  --clay-dim: #b8684018;
-  --sand:     #c8a870;
-  --sand-dim: #c8a87018;
+  --bg:       #0A0A0B;
+  --bg1:      #111113;
+  --bg2:      #18181B;
+  --bg3:      #222226;
+  --line:     rgba(255,255,255,0.06);
+  --line2:    rgba(255,255,255,0.10);
+  --text:     #E4E4E7;
+  --muted:    #71717A;
+  --faint:    #3F3F46;
+  --green:    #4ADE80;
+  --green-bg: rgba(74,222,128,0.08);
+  --green-bd: rgba(74,222,128,0.2);
+  --blue:     #60A5FA;
+  --blue-bg:  rgba(96,165,250,0.08);
+  --blue-bd:  rgba(96,165,250,0.2);
+  --amber:    #FBBF24;
+  --amber-bg: rgba(251,191,36,0.08);
+  --amber-bd: rgba(251,191,36,0.2);
+  --purple:   #A78BFA;
+  --purple-bg:rgba(167,139,250,0.08);
+  --purple-bd:rgba(167,139,250,0.2);
+  --red:      #F87171;
+  --red-bg:   rgba(248,113,113,0.08);
+  --mono: 'Geist Mono', 'Fira Code', monospace;
+  --sans: 'Geist', system-ui, sans-serif;
+  --r: 6px;
 }
 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
-  color: var(--ink);
-  font-family: 'DM Mono', monospace;
-  font-size: 15px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
+/* subtle grid bg */
 body::before {
   content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 0;
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.wrap {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 80px 32px 120px;
-  position: relative; z-index: 1;
+a { color: inherit; text-decoration: none; }
+
+/* TOPBAR */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,10,11,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line2);
+  padding: 0 2rem;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 100%;
 }
 
-header { margin-bottom: 72px; animation: rise .8s cubic-bezier(.16,1,.3,1) both; }
+.topbar-left { display: flex; align-items: center; gap: 20px; }
 
-.eyebrow {
-  font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
-  color: var(--accent2); margin-bottom: 24px;
-  display: flex; align-items: center; gap: 12px;
-}
-.eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent2); }
-
-h1 {
-  font-family: 'Lora', serif;
-  font-size: clamp(48px, 7vw, 80px);
+.logo {
+  font-family: var(--mono);
+  font-size: 12px;
   font-weight: 500;
-  line-height: .95;
-  letter-spacing: -.02em;
-  color: var(--ink);
+  color: var(--text);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-h1 em { font-style: italic; color: var(--accent); }
 
-.sub {
-  margin-top: 20px;
-  font-size: 11px; line-height: 1.9; color: var(--ink3);
-  max-width: 440px;
+.logo-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse 2s infinite;
 }
-.sub code { color: var(--accent); font-size: 11px; }
 
-.nav-wrap { margin-bottom: 56px; animation: rise .8s .1s cubic-bezier(.16,1,.3,1) both; }
-.nav-group { margin-bottom: 14px; }
-.nav-label { font-size: 9px; letter-spacing: .25em; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
-.pills { display: flex; flex-wrap: wrap; gap: 6px; }
-.pills a {
-  text-decoration: none; font-size: 10px; letter-spacing: .08em;
-  text-transform: uppercase; padding: 5px 12px;
-  border: 1px solid var(--border2); border-radius: 2px;
-  color: var(--ink3); background: var(--surface); transition: all .2s;
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
-.pills a:hover { border-color: var(--accent); color: var(--accent); background: var(--warm-dim); }
 
-.divider {
-  display: flex; align-items: center; gap: 16px;
-  margin: 56px 0 16px;
-  font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--ink3);
+.topbar-links { display: flex; gap: 4px; }
+
+.topbar-link {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  border: 1px solid transparent;
 }
-.divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.topbar-link:hover { color: var(--text); background: var(--bg2); border-color: var(--line2); }
 
-.cards { display: flex; flex-direction: column; gap: 1px; }
+.topbar-right {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 5rem 2rem 3.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 1px;
+  background: var(--green);
+}
+
+.hero h1 {
+  font-family: var(--mono);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.hero h1 .accent { color: var(--green); font-weight: 500; }
+.hero h1 .dim { color: var(--muted); }
+
+.hero-desc {
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 480px;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.hero-desc code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--bg2);
+  border: 1px solid var(--line2);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--text);
+}
+
+/* FLOW TAGS */
+.flow-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.flow-group { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+
+.flow-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  text-transform: uppercase;
+  margin-right: 2px;
+}
+
+.flow-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 3px;
+  border: 1px solid var(--line2);
+  color: var(--muted);
+  background: var(--bg1);
+  transition: all 0.12s;
+  cursor: pointer;
+}
+.flow-tag:hover { color: var(--text); border-color: var(--green-bd); background: var(--green-bg); }
+.flow-tag.green { border-color: var(--green-bd); color: var(--green); }
+.flow-tag.blue  { border-color: var(--blue-bd);  color: var(--blue); }
+
+/* LAYOUT */
+.layout {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+
+/* SECTION */
+.section { padding-top: 3rem; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-id {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.section-name {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.section-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-left: auto;
+}
+
+.badge-green { background: var(--green-bg); border: 1px solid var(--green-bd); color: var(--green); }
+.badge-blue  { background: var(--blue-bg);  border: 1px solid var(--blue-bd);  color: var(--blue); }
+.badge-amber { background: var(--amber-bg); border: 1px solid var(--amber-bd); color: var(--amber); }
+.badge-purple{ background: var(--purple-bg);border: 1px solid var(--purple-bd);color: var(--purple); }
+
+/* CARDS GRID */
+.cards { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+
 .card {
-  background: var(--surface); border: 1px solid var(--border); border-top: none;
-  position: relative; overflow: hidden;
-  animation: rise .6s cubic-bezier(.16,1,.3,1) both;
+  background: var(--bg1);
+  padding: 0;
+  transition: background 0.15s;
+  overflow: hidden;
 }
-.cards .card:first-child { border-top: 1px solid var(--border); }
-.card:nth-child(2) { animation-delay: .06s; }
-.card:nth-child(3) { animation-delay: .12s; }
-.card:nth-child(4) { animation-delay: .18s; }
-.card-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+
+.card:hover { background: var(--bg2); }
 
 .card-top {
-  padding: 22px 24px 20px 28px; border-bottom: 1px solid var(--border);
-  display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start;
+  padding: 1.25rem 1.25rem 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
-.card-num { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
-.card-title {
-  font-family: 'Lora', serif; font-size: 17px; font-weight: 500;
-  color: var(--ink); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-}
-.cmd { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400; padding: 2px 8px; border-radius: 2px; border: 1px solid; }
-.tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
-.tag { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; border: 1px solid; }
-.badge-wip {
-  font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
-  padding: 2px 8px; border-radius: 2px;
-  border: 1px solid var(--sand); background: var(--sand-dim); color: var(--accent2); margin-left: 4px;
-}
-.usage {
-  font-size: 10px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 2px;
-  background: var(--surface2); color: var(--ink3); align-self: flex-start; min-width: 0;
-}
-.usage strong { display: block; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink3); margin-bottom: 4px; font-weight: 400; }
-.usage code { color: var(--accent); font-size: 10px; word-break: break-all; }
 
-.sec { padding: 18px 24px 18px 28px; border-bottom: 1px solid var(--border); }
-.sec:last-child { border-bottom: none; }
-.sec-lbl { font-size: 9px; letter-spacing: .25em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
-.desc { font-size: 13px; line-height: 1.9; color: var(--ink2); }
-
-.checklist { display: flex; flex-direction: column; gap: 5px; }
-.ci {
-  display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--ink2);
-  padding: 7px 11px; background: var(--surface2); border: 1px solid var(--border); border-radius: 2px;
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.75rem;
 }
-.cb { width: 13px; height: 13px; flex-shrink: 0; border: 1px solid var(--border2); border-radius: 2px; display: flex; align-items: center; justify-content: center; }
-.ci.req .cb { border-color: var(--sage); background: var(--sage-dim); }
 
-.code-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.code-path { font-size: 10px; color: var(--ink3); }
-pre {
-  background: #1a1510; border: 1px solid #3a3028; border-radius: 2px;
-  padding: 18px 20px; overflow-x: auto; font-size: 12px; line-height: 1.8; color: #d0c4b0; tab-size: 2;
+.card-id {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--faint);
+  letter-spacing: 0.08em;
 }
+
+.card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.ctag {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 2px;
+  border: 1px solid var(--line2);
+  color: var(--muted);
+}
+
+.card-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.card-cmd {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--green);
+  letter-spacing: -0.02em;
+}
+
+.card-name {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.card-usage {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+  margin-bottom: 0.5rem;
+}
+
+.card-usage span { color: var(--blue); }
+
+.card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* CHECKLIST inside card */
+.card-checklist {
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.cl-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.cl-item {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  padding: 3px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cl-item::before {
+  content: '';
+  width: 12px; height: 12px;
+  border: 1px solid var(--faint);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* CODE BLOCK */
+.card-code-header {
+  padding: 0.625rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg);
+}
+
+.code-path {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--faint);
+}
+
+.code-path span { color: var(--muted); }
+
 .copy-btn {
-  background: var(--surface2); border: 1px solid var(--border); border-radius: 2px; color: var(--ink3);
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
-  padding: 4px 10px; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: 3px;
+  border: 1px solid var(--line2);
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  transition: all 0.15s;
 }
-.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-.copy-btn.ok { border-color: var(--sage); color: var(--sage); }
 
-.k { color: #c4914a; } .s { color: #a0b880; } .c { color: #6a6058; }
-.v { color: #d4a060; } .e { color: #c07858; } .h { color: #90a880; }
+.copy-btn:hover { color: var(--text); border-color: var(--green-bd); background: var(--green-bg); }
+.copy-btn.ok { color: var(--green); border-color: var(--green-bd); }
 
-footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-.fl { font-size: 10px; color: var(--ink3); }
-.fr { display: flex; align-items: baseline; gap: 6px; }
-.count { font-family: 'Lora', serif; font-size: 28px; font-weight: 500; color: var(--accent); }
-.count-label { font-size: 10px; color: var(--ink3); }
+pre {
+  background: var(--bg);
+  padding: 1rem 1.25rem;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.75;
+  color: #A1A1AA;
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+}
 
-.c-warm .card-bar { background: var(--warm); }
-.c-warm .cmd { color: var(--warm); border-color: #c4914a40; background: var(--warm-dim); }
-.c-sage .card-bar { background: var(--sage); }
-.c-sage .cmd { color: var(--sage); border-color: #6a806040; background: var(--sage-dim); }
-.c-rust .card-bar { background: var(--rust); }
-.c-rust .cmd { color: var(--rust); border-color: #9a4a3840; background: var(--rust-dim); }
-.c-clay .card-bar { background: var(--clay); }
-.c-clay .cmd { color: var(--clay); border-color: #b8684040; background: var(--clay-dim); }
-.c-sand .card-bar { background: var(--sand); }
-.c-sand .cmd { color: var(--sand); border-color: #c8a87040; background: var(--sand-dim); }
+/* syntax */
+.kw  { color: var(--purple); }
+.str { color: var(--green); }
+.cm  { color: var(--faint); font-style: italic; }
+.cmd { color: var(--blue); }
+.ph  { color: var(--amber); }
+.hd  { color: var(--text); font-weight: 500; }
 
-.t-w { background: var(--warm-dim); border-color: #c4914a30; color: var(--warm); }
-.t-s { background: var(--sage-dim); border-color: #6a806030; color: var(--sage); }
-.t-r { background: var(--rust-dim); border-color: #9a4a3830; color: var(--rust); }
-.t-c { background: var(--clay-dim); border-color: #b8684030; color: var(--clay); }
-.t-d { background: var(--sand-dim); border-color: #c8a87030; color: var(--sand); }
+/* FOOTER */
+footer {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+footer span {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--faint);
+  letter-spacing: 0.06em;
+}
 
-@media (max-width: 600px) {
-  .card-top { grid-template-columns: 1fr; }
-  .usage { white-space: normal; }
-  .sec { padding: 16px 18px 16px 22px; }
-  .card-top { padding: 18px 18px 16px 22px; }
+@media (max-width: 640px) {
+  .topbar { padding: 0 1rem; }
+  .hero, .layout, footer { padding-left: 1rem; padding-right: 1rem; }
+  .hero h1 { font-size: 1.75rem; }
+  .topbar-links { display: none; }
 }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-<header>
-  <div class="eyebrow">Prompt Dictionary</div>
-  <h1>Your<br><em>Prompts.</em></h1>
-  <p class="sub">Ready-to-use skills for Claude Code. Save to <code>~/.claude/skills/</code> and invoke with <code>/name</code>.</p>
-</header>
-
-<div class="nav-wrap">
-  <div class="nav-group">
-    <div class="nav-label">PR Flow</div>
-    <div class="pills">
-      <a href="#revisor">/reviewer</a>
-      <a href="#criar-pr">/create-pr</a>
-      <a href="#responder-pr">/reply-pr</a>
-      <a href="#abrir-pr">/open-pr</a>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">
+      <span class="logo-dot"></span>
+      prompt-dictionary
     </div>
+    <nav class="topbar-links">
+      <a href="#pr-flow" class="topbar-link">/pr-flow</a>
+      <a href="#sdd-flow" class="topbar-link">/sdd-flow</a>
+      <a href="#arch-interview" class="topbar-link">/arch-interview</a>
+    </nav>
   </div>
-  <div class="nav-group">
-    <div class="nav-label">SDD Flow</div>
-    <div class="pills">
-      <a href="#sdd-init">/sdd-init</a>
-      <a href="#sdd-install">/sdd-install</a>
-      <a href="#sdd-start">/sdd-start</a>
-      <a href="#sdd-spec">/sdd-spec</a>
-      <a href="#sdd-plan">/sdd-plan</a>
-      <a href="#sdd-build">/sdd-build</a>
-      <a href="#sdd-hub">/sdd-hub</a>
-      <a href="#sdd-fix">/sdd-fix</a>
+  <span class="topbar-right">12 prompts · 2026</span>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">Claude Code · Skills</p>
+  <h1>Your <span class="accent">*Prompts.*</span><br><span class="dim">Ready to invoke.</span></h1>
+  <p class="hero-desc">
+    Ready-to-use skills for Claude Code.
+    Save to <code>~/.claude/skills/</code> and invoke with <code>/name</code>.
+  </p>
+  <div class="flow-tags">
+    <div class="flow-group">
+      <span class="flow-label">PR Flow</span>
+      <a href="#reviewer"   class="flow-tag green">/reviewer</a>
+      <a href="#create-pr"  class="flow-tag green">/create-pr</a>
+      <a href="#reply-pr"   class="flow-tag green">/reply-pr</a>
+      <a href="#open-pr"    class="flow-tag green">/open-pr</a>
+    </div>
+    <div class="flow-group" style="margin-top:8px">
+      <span class="flow-label">SDD Flow</span>
+      <a href="#sdd-init"    class="flow-tag blue">/sdd-init</a>
+      <a href="#sdd-install" class="flow-tag blue">/sdd-install</a>
+      <a href="#sdd-start"   class="flow-tag blue">/sdd-start</a>
+      <a href="#sdd-spec"    class="flow-tag blue">/sdd-spec</a>
+      <a href="#sdd-plan"    class="flow-tag blue">/sdd-plan</a>
+      <a href="#sdd-build"   class="flow-tag blue">/sdd-build</a>
+      <a href="#sdd-hub"     class="flow-tag blue">/sdd-hub</a>
+      <a href="#sdd-fix"     class="flow-tag blue">/sdd-fix</a>
+    </div>
+    <div class="flow-group" style="margin-top:8px">
+      <span class="flow-label">Arch Interview</span>
+      <a href="#arch-contexto"    class="flow-tag" style="border-color:var(--amber-bd);color:var(--amber)">/contexto</a>
+      <a href="#arch-escala"      class="flow-tag" style="border-color:var(--amber-bd);color:var(--amber)">/escala</a>
+      <a href="#arch-seguranca"   class="flow-tag" style="border-color:var(--amber-bd);color:var(--amber)">/segurança</a>
+      <a href="#arch-operacao"    class="flow-tag" style="border-color:var(--amber-bd);color:var(--amber)">/operação</a>
+      <a href="#arch-integracoes" class="flow-tag" style="border-color:var(--amber-bd);color:var(--amber)">/integrações</a>
+      <a href="#arch-negocio"     class="flow-tag" style="border-color:var(--amber-bd);color:var(--amber)">/negócio</a>
+      <a href="#arch-miro"        class="flow-tag" style="border-color:var(--amber-bd);color:var(--amber)">/miro-board</a>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ PR FLOW ═══════════ -->
-<div class="divider">PR Flow</div>
-<div class="cards">
+<!-- MAIN -->
+<div class="layout">
 
-<!-- /reviewer -->
-<div class="card c-warm" id="revisor">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">PR · 001</div>
-      <div class="card-title">Code Review <span class="cmd">/reviewer</span></div>
-      <div class="tags">
-        <span class="tag t-r">🐛 Bugs</span>
-        <span class="tag t-w">⚠️ Style</span>
-        <span class="tag t-d">⚡ Performance</span>
-        <span class="tag t-s">🧪 Tests</span>
-      </div>
+  <!-- PR FLOW -->
+  <section class="section" id="pr-flow">
+    <div class="section-header">
+      <span class="section-id">flow · 01</span>
+      <span class="section-name">PR Flow</span>
+      <span class="section-badge badge-green">4 skills</span>
     </div>
-    <div class="usage"><strong>Usage</strong><code>/reviewer [pr-link]</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Reviews Pull Requests as a senior engineer — flags bugs, style issues, performance opportunities, and test coverage gaps. Before executing, shows the full prompt and waits for your confirmation.</p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/reviewer/SKILL.md</code></div>
-    <div class="code-header">
-      <span class="code-path"></span>
-      <button class="copy-btn" onclick="cp(this,'c-revisor')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-revisor"><span class="c">---</span>
-<span class="k">name</span>: reviewer
-<span class="k">description</span>: Reviews PRs in GitHub Review style
-<span class="c">---</span>
+
+    <div class="cards">
+
+      <!-- reviewer -->
+      <div class="card" id="reviewer">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">PR · 001</span>
+              <div class="card-tags">
+                <span class="ctag">🐛 Bugs</span>
+                <span class="ctag">⚠️ Style</span>
+                <span class="ctag">⚡ Performance</span>
+                <span class="ctag">🧪 Tests</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/reviewer</span>
+              <span class="card-name">Code Review</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/reviewer [pr-link]</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Reviews Pull Requests as a senior engineer — flags bugs, style issues, performance opportunities, and test coverage gaps. Before executing, shows the full prompt and waits for your confirmation.
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/reviewer/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-reviewer')">Copy</button>
+        </div>
+        <pre id="code-reviewer"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">reviewer</span>
+<span class="kw">description</span>: <span class="str">Reviews PRs in GitHub Review style</span>
+<span class="cm">---</span>
 
 Before reviewing, show me the full prompt you will use and wait
-for my confirmation. Only proceed after I reply <span class="s">"go ahead"</span>.
+for my confirmation. Only proceed after I reply <span class="str">"go ahead"</span>.
 
 You are a senior engineer reviewing a Pull Request. Analyze
 the code and return comments in GitHub Review style, organized
@@ -278,92 +571,89 @@ by file and line number when possible.
 
 For each issue found, use the format:
 
-<span class="h">**[FILE]**</span> `path/to/file.ext`
-<span class="h">**[LINE]**</span> 42 *(if applicable)*
-<span class="h">**[TYPE]**</span> 🐛 Bug | ⚠️ Style | ⚡ Performance | 🧪 Tests
-<span class="h">**[SEVERITY]**</span> Critical / Important / Suggestion
-<span class="h">**[COMMENT]**</span> Description of the issue.
-<span class="h">**[SUGGESTION]**</span> How to fix it.
+<span class="hd">**[FILE]**</span> <span class="cmd">`path/to/file.ext`</span>
+<span class="hd">**[LINE]**</span> <span class="ph">42</span> <span class="cm">*(if applicable)*</span>
+<span class="hd">**[TYPE]**</span> 🐛 Bug | ⚠️ Style | ⚡ Performance | 🧪 Tests
+<span class="hd">**[SEVERITY]**</span> Critical / Important / Suggestion
+<span class="hd">**[COMMENT]**</span> Description of the issue.
+<span class="hd">**[SUGGESTION]**</span> How to fix it.
 
-<span class="e">### Review Summary</span>
+<span class="hd">### Review Summary</span>
 - ✅ What looks good
 - 🔴 Critical (blocks merge)
 - 🟡 Important
 - 💡 Optional suggestions
 
-<span class="e">### Verdict</span>
+<span class="hd">### Verdict</span>
 [ ] Approved  [ ] Approved with comments  [ ] Changes required
 
 Focus: bugs, style, performance, test coverage.
 
-PR: <span class="v">$ARGUMENTS</span></pre>
-  </div>
-</div>
-
-<!-- /create-pr -->
-<div class="card c-clay" id="criar-pr">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">PR · 002</div>
-      <div class="card-title">Create PR <span class="cmd">/create-pr</span></div>
-      <div class="tags">
-        <span class="tag t-c">📋 SDD</span>
-        <span class="tag t-s">✅ Checklist</span>
-        <span class="tag t-d">📸 Evidence</span>
-        <span class="tag t-w">🏷️ Milestone</span>
+PR: <span class="ph">$ARGUMENTS</span></pre>
       </div>
-    </div>
-    <div class="usage"><strong>Usage</strong><code>/create-pr [jira] [v1.0.0] [diff]</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Required checklist</div>
-    <div class="checklist">
-      <div class="ci req"><div class="cb"><svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Automated tests passing</div>
-      <div class="ci req"><div class="cb"><svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Manually tested</div>
-      <div class="ci req"><div class="cb"><svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Docs / MDs updated</div>
-      <div class="ci req"><div class="cb"><svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Code quality / lint ok</div>
-      <div class="ci req"><div class="cb"><svg width="7" height="7" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Evidence included — screenshots, video, Bugsnag, tracker</div>
-      <div class="ci"><div class="cb"></div>No <code>console.log</code> or debug code</div>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/create-pr/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-criar-pr')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-criar-pr"><span class="c">---</span>
-<span class="k">name</span>: create-pr
-<span class="k">description</span>: Generates PR title, SDD description and full checklist
-<span class="c">---</span>
+
+      <!-- create-pr -->
+      <div class="card" id="create-pr">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">PR · 002</span>
+              <div class="card-tags">
+                <span class="ctag">📋 SDD</span>
+                <span class="ctag">✅ Checklist</span>
+                <span class="ctag">📸 Evidence</span>
+                <span class="ctag">🏷️ Milestone</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/create-pr</span>
+              <span class="card-name">Create PR</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/create-pr [jira] [v1.0.0] [diff]</div>
+          </div>
+        </div>
+        <div class="card-checklist">
+          <div class="cl-label">Required checklist</div>
+          <div class="cl-item">Automated tests passing</div>
+          <div class="cl-item">Manually tested</div>
+          <div class="cl-item">Docs / MDs updated</div>
+          <div class="cl-item">Code quality / lint ok</div>
+          <div class="cl-item">Evidence included — screenshots, video, Bugsnag, tracker</div>
+          <div class="cl-item">No <code style="font-size:10px;background:var(--bg2);padding:0 4px;border-radius:2px;color:var(--red)">console.log</code> or debug code</div>
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/create-pr/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-create-pr')">Copy</button>
+        </div>
+        <pre id="code-create-pr"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">create-pr</span>
+<span class="kw">description</span>: <span class="str">Generates PR title, SDD description and full checklist</span>
+<span class="cm">---</span>
 
 You are a senior engineer who writes clear, standardized PR
 descriptions. From the Jira link, milestone and diff, generate
 a complete PR. If any data is missing, ask before continuing.
 
-<span class="e">## Title</span>
-
+<span class="hd">## Title</span>
 Format: [TYPE-0000] Short clear description · Milestone: vX.X.X
+Types: BUG | FEAT | CHORE
 
-Types: <span class="v">BUG</span> | <span class="v">FEAT</span> | <span class="v">CHORE</span>
+<span class="hd">## Description</span>
 
-<span class="e">## Description</span>
-
-<span class="h">### 🎯 Context</span>
+<span class="hd">### 🎯 Context</span>
 What motivated this change? Reference: [TYPE-0000](jira-link)
 
-<span class="h">### 🛠️ What was done</span>
+<span class="hd">### 🛠️ What was done</span>
 Objective bullet points of the main changes.
 
-<span class="h">### 🔍 Technical decisions</span>
+<span class="hd">### 🔍 Technical decisions</span>
 Trade-offs and discarded alternatives, if any.
 
-<span class="h">### 📸 Evidence</span>
+<span class="hd">### 📸 Evidence</span>
 Screenshots, videos, Bugsnag/tracker links.
 ⚠️ Required if it affects UI or user-visible behavior.
 
-<span class="e">## ✅ Checklist</span>
-
+<span class="hd">## ✅ Checklist</span>
 - [ ] Automated tests passing
 - [ ] Manually tested
 - [ ] Docs / MDs updated (if applicable)
@@ -373,316 +663,338 @@ Screenshots, videos, Bugsnag/tracker links.
 
 After generating, confirm: Jira type/number, milestone, evidence.
 
-Content: <span class="v">$ARGUMENTS</span></pre>
-  </div>
-</div>
-
-<!-- /reply-pr -->
-<div class="card c-sage" id="responder-pr">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">PR · 003</div>
-      <div class="card-title">Reply to PR <span class="cmd">/reply-pr</span></div>
-      <div class="tags">
-        <span class="tag t-s">💬 Review</span>
-        <span class="tag t-w">🎯 Argument</span>
-        <span class="tag t-r">✅ Resolution</span>
+Content: <span class="ph">$ARGUMENTS</span></pre>
       </div>
-    </div>
-    <div class="usage"><strong>Usage</strong><code>/reply-pr [comment]</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Analyzes a code review comment and suggests the best reply — agreeing and fixing, arguing technically, or asking for more context. Always professional and direct.</p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/reply-pr/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-responder-pr')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-responder-pr"><span class="c">---</span>
-<span class="k">name</span>: reply-pr
-<span class="k">description</span>: Suggests replies to code review comments
-<span class="c">---</span>
+
+      <!-- reply-pr -->
+      <div class="card" id="reply-pr">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">PR · 003</span>
+              <div class="card-tags">
+                <span class="ctag">💬 Review</span>
+                <span class="ctag">🎯 Argument</span>
+                <span class="ctag">✅ Resolution</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/reply-pr</span>
+              <span class="card-name">Reply to PR</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/reply-pr [comment]</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Analyzes a code review comment and suggests the best reply — agreeing and fixing, arguing technically, or asking for more context. Always professional and direct.
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/reply-pr/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-reply-pr')">Copy</button>
+        </div>
+        <pre id="code-reply-pr"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">reply-pr</span>
+<span class="kw">description</span>: <span class="str">Suggests replies to code review comments</span>
+<span class="cm">---</span>
 
 You are a senior engineer responding to a code review comment.
 Analyze the comment and suggest the best reply.
 
-<span class="h">**[TYPE]**</span>
+<span class="hd">**[TYPE]**</span>
 - ✅ Agree → will fix
 - 🤔 Partially agree → will adapt
 - 💡 Disagree → have a technical argument
 - ❓ Need more context
 
-<span class="h">**[SUGGESTED REPLY]**</span>
+<span class="hd">**[SUGGESTED REPLY]**</span>
 Write the reply directly — professional and objective.
 If fixing, mention what will change.
 If arguing, cite references or justify technically.
 If needing context, ask a specific question.
 
-<span class="h">**[ACTION]**</span>
+<span class="hd">**[ACTION]**</span>
 What needs to be done in the code (or no action needed).
 
 Keep a collaborative tone — code review is about the code,
 not the person.
 
-Comment: <span class="v">$ARGUMENTS</span></pre>
-  </div>
-</div>
-
-<!-- /open-pr -->
-<div class="card c-sand" id="abrir-pr">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">PR · 004</div>
-      <div class="card-title">Open PR <span class="cmd">/open-pr</span></div>
-      <div class="tags">
-        <span class="tag t-d">🚀 GitHub</span>
-        <span class="tag t-w">🏷️ Labels</span>
-        <span class="tag t-s">👥 Reviewers</span>
+Comment: <span class="ph">$ARGUMENTS</span></pre>
       </div>
-    </div>
-    <div class="usage"><strong>Usage</strong><code>/open-pr [branch] [base]</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Opens the PR on GitHub via CLI using the title and description generated by <code style="color:var(--accent2)">/create-pr</code>. Suggests labels and milestone based on the task type.</p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/open-pr/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-abrir-pr')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-abrir-pr"><span class="c">---</span>
-<span class="k">name</span>: open-pr
-<span class="k">description</span>: Opens PR on GitHub with title, description and metadata
-<span class="k">allowed-tools</span>: Bash
-<span class="c">---</span>
+
+      <!-- open-pr -->
+      <div class="card" id="open-pr">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">PR · 004</span>
+              <div class="card-tags">
+                <span class="ctag">🚀 GitHub</span>
+                <span class="ctag">🏷️ Labels</span>
+                <span class="ctag">👥 Reviewers</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/open-pr</span>
+              <span class="card-name">Open PR</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/open-pr [branch] [base]</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Opens the PR on GitHub via CLI using the title and description generated by <code style="font-family:var(--mono);font-size:11px;background:var(--bg2);padding:0 5px;border-radius:3px;color:var(--green)">/create-pr</code>. Suggests labels and milestone based on the task type.
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/open-pr/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-open-pr')">Copy</button>
+        </div>
+        <pre id="code-open-pr"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">open-pr</span>
+<span class="kw">description</span>: <span class="str">Opens PR on GitHub with title, description and metadata</span>
+<span class="kw">allowed-tools</span>: <span class="str">Bash</span>
+<span class="cm">---</span>
 
 Use the title and description already generated by /create-pr.
 If not ready, run /create-pr first.
 
-<span class="e">## Steps</span>
+<span class="hd">## Steps</span>
 
-1. Check authentication: `!gh auth status`
-2. Confirm current branch: `!git branch --show-current`
+1. Check authentication: <span class="cmd">`!gh auth status`</span>
+2. Confirm current branch: <span class="cmd">`!git branch --show-current`</span>
 3. Open the PR:
 
-```bash
-gh pr create \
+<span class="cmd">gh pr create \
   --title "[TYPE-0000] Change title" \
   --body "$(cat pr-description.md)" \
   --base main \
   --milestone "vX.X.X" \
   --label "bug|feature|chore" \
-  --assignee "@me"
-```
+  --assignee "@me"</span>
 
 4. Display the link of the created PR.
 
-<span class="e">## Labels by type</span>
-<span class="v">FEAT</span> → `feature` · <span class="v">BUG</span> → `bug` · <span class="v">CHORE</span> → `chore`
+<span class="hd">## Labels by type</span>
+FEAT → <span class="str">`feature`</span> · BUG → <span class="str">`bug`</span> · CHORE → <span class="str">`chore`</span>
 
 If gh CLI is not installed:
-`brew install gh && gh auth login`
+<span class="cmd">`brew install gh && gh auth login`</span>
 
-Branch and base: <span class="v">$ARGUMENTS</span></pre>
-  </div>
-</div>
+Branch and base: <span class="ph">$ARGUMENTS</span></pre>
+      </div>
 
-</div><!-- /cards PR -->
-
-<!-- ═══════════ SDD FLOW ═══════════ -->
-<div class="divider">SDD Flow</div>
-<div class="cards">
-
-<!-- /sdd-init -->
-<div class="card c-sand" id="sdd-init">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">SDD · 001</div>
-      <div class="card-title">Init <span class="cmd">/sdd-init</span> <span class="badge-wip">⚙️ configure</span></div>
-      <div class="tags"><span class="tag t-d">🔧 Setup</span><span class="tag t-w">📦 Kit</span></div>
     </div>
-    <div class="usage"><strong>Usage</strong><code>/sdd-init [project]</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Initializes the SDD kit structure in the project. <strong style="color:var(--accent2)">Replace the "Team-specific kit" block with your team's commands.</strong></p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-init/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-sdd-init')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+  </section>
+
+  <!-- SDD FLOW -->
+  <section class="section" id="sdd-flow">
+    <div class="section-header">
+      <span class="section-id">flow · 02</span>
+      <span class="section-name">SDD Flow</span>
+      <span class="section-badge badge-blue">8 skills</span>
     </div>
-    <pre id="c-sdd-init"><span class="c">---</span>
-<span class="k">name</span>: sdd-init
-<span class="k">description</span>: Initializes the SDD kit structure in the project
-<span class="k">allowed-tools</span>: Bash, Write
-<span class="c">---</span>
+
+    <div class="cards">
+
+      <!-- sdd-init -->
+      <div class="card" id="sdd-init">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">SDD · 001</span>
+              <div class="card-tags">
+                <span class="ctag">⚙️ configure</span>
+                <span class="ctag">🔧 Setup</span>
+                <span class="ctag">📦 Kit</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/sdd-init</span>
+              <span class="card-name">Init</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/sdd-init [project]</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Initializes the SDD kit structure in the project. <strong style="color:var(--amber)">Replace the "Team-specific kit" block with your team's commands.</strong>
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/sdd-init/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-sdd-init')">Copy</button>
+        </div>
+        <pre id="code-sdd-init"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">sdd-init</span>
+<span class="kw">description</span>: <span class="str">Initializes the SDD kit structure in the project</span>
+<span class="kw">allowed-tools</span>: <span class="str">Bash, Write</span>
+<span class="cm">---</span>
 
 Initialize the base SDD structure for the given project.
 
-<span class="e">## Structure to create</span>
+<span class="hd">## Structure to create</span>
 
-```
 .sdd/
-  spec.md       ← generated by /sdd-spec
-  plan.md       ← generated by /sdd-plan
-  hub.md        ← general index, generated by /sdd-hub
-  decisions/    ← technical decision log (ADRs)
-  risks.md      ← risks and dependencies
-```
+  spec.md       <span class="cm">← generated by /sdd-spec</span>
+  plan.md       <span class="cm">← generated by /sdd-plan</span>
+  hub.md        <span class="cm">← general index, generated by /sdd-hub</span>
+  decisions/    <span class="cm">← technical decision log (ADRs)</span>
+  risks.md      <span class="cm">← risks and dependencies</span>
 
-<span class="e">## Team-specific kit</span>
+<span class="hd">## Team-specific kit</span>
 
-<span class="v"># ⚠️ Replace with your team's commands:</span>
-<span class="v"># !your-init-command $ARGUMENTS</span>
+<span class="cm"># ⚠️ Replace with your team's commands:</span>
+<span class="cm"># !your-init-command $ARGUMENTS</span>
 
-<span class="e">## After creating the structure</span>
+<span class="hd">## After creating the structure</span>
 
 - Confirm directories were created
 - Instruct to run /sdd-install next
 
-Project: <span class="v">$ARGUMENTS</span></pre>
-  </div>
-</div>
+Project: <span class="ph">$ARGUMENTS</span></pre>
+      </div>
 
-<!-- /sdd-install -->
-<div class="card c-sand" id="sdd-install">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">SDD · 002</div>
-      <div class="card-title">Install <span class="cmd">/sdd-install</span> <span class="badge-wip">⚙️ configure</span></div>
-      <div class="tags"><span class="tag t-d">📦 Deps</span><span class="tag t-w">🔧 Kit</span></div>
-    </div>
-    <div class="usage"><strong>Usage</strong><code>/sdd-install</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Installs the SDD kit dependencies. <strong style="color:var(--accent2)">Replace the install block with your team's actual commands.</strong></p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-install/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-sdd-install')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-sdd-install"><span class="c">---</span>
-<span class="k">name</span>: sdd-install
-<span class="k">description</span>: Installs SDD kit dependencies
-<span class="k">allowed-tools</span>: Bash
-<span class="c">---</span>
+      <!-- sdd-install -->
+      <div class="card" id="sdd-install">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">SDD · 002</span>
+              <div class="card-tags">
+                <span class="ctag">⚙️ configure</span>
+                <span class="ctag">📦 Deps</span>
+                <span class="ctag">🔧 Kit</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/sdd-install</span>
+              <span class="card-name">Install</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/sdd-install</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Installs the SDD kit dependencies. <strong style="color:var(--amber)">Replace the install block with your team's actual commands.</strong>
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/sdd-install/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-sdd-install')">Copy</button>
+        </div>
+        <pre id="code-sdd-install"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">sdd-install</span>
+<span class="kw">description</span>: <span class="str">Installs SDD kit dependencies</span>
+<span class="kw">allowed-tools</span>: <span class="str">Bash</span>
+<span class="cm">---</span>
 
 Install the dependencies required for the SDD kit.
 
-<span class="e">## Pre-install checks</span>
+<span class="hd">## Pre-install checks</span>
 
 1. Confirm /sdd-init was run (.sdd/ exists)
 2. Check the environment (node, python, etc. per kit)
 
-<span class="e">## Kit installation</span>
+<span class="hd">## Kit installation</span>
 
-<span class="v"># ⚠️ Replace with your team's actual commands:</span>
-<span class="v"># !npm install your-sdd-kit</span>
-<span class="v"># !your-cli install</span>
+<span class="cm"># ⚠️ Replace with your team's actual commands:</span>
+<span class="cm"># !npm install your-sdd-kit</span>
+<span class="cm"># !your-cli install</span>
 
-<span class="e">## After installing</span>
+<span class="hd">## After installing</span>
 
 - Confirm installation was successful
 - Instruct next step: /sdd-start
 - If there's an error, diagnose and suggest a fix</pre>
-  </div>
-</div>
+      </div>
 
-<!-- /sdd-start -->
-<div class="card c-warm" id="sdd-start">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">SDD · 003</div>
-      <div class="card-title">Start <span class="cmd">/sdd-start</span></div>
-      <div class="tags"><span class="tag t-w">🚀 Kickoff</span><span class="tag t-c">🎯 Goal</span></div>
-    </div>
-    <div class="usage"><strong>Usage</strong><code>/sdd-start [idea]</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Entry point for the SDD flow. Receives the idea or problem in plain language, confirms understanding, and sets the stage for /sdd-spec.</p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-start/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-sdd-start')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-sdd-start"><span class="c">---</span>
-<span class="k">name</span>: sdd-start
-<span class="k">description</span>: Kicks off the SDD flow from an idea or problem
-<span class="c">---</span>
+      <!-- sdd-start -->
+      <div class="card" id="sdd-start">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">SDD · 003</span>
+              <div class="card-tags">
+                <span class="ctag">🚀 Kickoff</span>
+                <span class="ctag">🎯 Goal</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/sdd-start</span>
+              <span class="card-name">Start</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/sdd-start [idea]</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Entry point for the SDD flow. Receives the idea or problem in plain language, confirms understanding, and sets the stage for /sdd-spec.
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/sdd-start/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-sdd-start')">Copy</button>
+        </div>
+        <pre id="code-sdd-start"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">sdd-start</span>
+<span class="kw">description</span>: <span class="str">Kicks off the SDD flow from an idea or problem</span>
+<span class="cm">---</span>
 
 You are a senior engineer starting a Software Design Document.
 Receive the idea and structure the beginning of the SDD.
 
-<span class="e">## What to do</span>
+<span class="hd">## What to do</span>
 
 1. Paraphrase the problem to confirm understanding
 2. Identify the work type:
    - New feature · Refactor · Recurring fix · Spike
 
-3. Create `.sdd/hub.md` with the header:
+3. Create <span class="cmd">`.sdd/hub.md`</span> with the header:
 
-```md
-# SDD — [Feature/Problem Name]
-**Status:** 🟡 In progress
-**Started:** [date]
-**Type:** feature | refactor | fix | spike
+<span class="hd"># SDD — [Feature/Problem Name]</span>
+<span class="kw">**Status:**</span> 🟡 In progress
+<span class="kw">**Started:**</span> [date]
+<span class="kw">**Type:**</span> feature | refactor | fix | spike
 
-## Summary
+<span class="hd">## Summary</span>
 [Problem paraphrase in 2-3 lines]
 
-## Next steps
+<span class="hd">## Next steps</span>
 - [ ] /sdd-spec — gather specifications
 - [ ] /sdd-plan — plan execution
 - [ ] /sdd-build — develop
-```
 
-4. Instruct next step: <span class="h">/sdd-spec</span>
+4. Instruct next step: /sdd-spec
 
-Idea: <span class="v">$ARGUMENTS</span></pre>
-  </div>
-</div>
+Idea: <span class="ph">$ARGUMENTS</span></pre>
+      </div>
 
-<!-- /sdd-spec -->
-<div class="card c-clay" id="sdd-spec">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">SDD · 004</div>
-      <div class="card-title">Spec <span class="cmd">/sdd-spec</span></div>
-      <div class="tags"><span class="tag t-c">📐 Specs</span><span class="tag t-w">💼 Business</span><span class="tag t-r">⚙️ Technical</span></div>
-    </div>
-    <div class="usage"><strong>Usage</strong><code>/sdd-spec [context]</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Generates technical and non-technical specifications. Asks business questions to fill gaps before producing the final document.</p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-spec/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-sdd-spec')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-sdd-spec"><span class="c">---</span>
-<span class="k">name</span>: sdd-spec
-<span class="k">description</span>: Generates technical and non-technical specs, asks business questions
-<span class="c">---</span>
+      <!-- sdd-spec -->
+      <div class="card" id="sdd-spec">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">SDD · 004</span>
+              <div class="card-tags">
+                <span class="ctag">📐 Specs</span>
+                <span class="ctag">💼 Business</span>
+                <span class="ctag">⚙️ Technical</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/sdd-spec</span>
+              <span class="card-name">Spec</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/sdd-spec [context]</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Generates technical and non-technical specifications. Asks business questions to fill gaps before producing the final document.
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/sdd-spec/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-sdd-spec')">Copy</button>
+        </div>
+        <pre id="code-sdd-spec"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">sdd-spec</span>
+<span class="kw">description</span>: <span class="str">Generates technical and non-technical specs, asks business questions</span>
+<span class="cm">---</span>
 
-Read `.sdd/hub.md` to understand the current context.
+Read <span class="cmd">`.sdd/hub.md`</span> to understand the current context.
 
-<span class="e">## Phase 1 — Business questions</span>
+<span class="hd">## Phase 1 — Business questions</span>
 
 Before generating specs, ask up to 5 essential questions:
 - Who are the affected users?
@@ -693,267 +1005,662 @@ Before generating specs, ask up to 5 essential questions:
 
 Wait for answers before continuing.
 
-<span class="e">## Phase 2 — Generate `.sdd/spec.md`</span>
+<span class="hd">## Phase 2 — Generate `.sdd/spec.md`</span>
 
-```md
-# Specifications — [Name]
+<span class="hd"># Specifications — [Name]</span>
 
-## Context and Problem
-## Non-Technical Requirements
-## Technical Requirements
-## Acceptance Criteria
+<span class="hd">## Context and Problem</span>
+<span class="hd">## Non-Technical Requirements</span>
+<span class="hd">## Technical Requirements</span>
+<span class="hd">## Acceptance Criteria</span>
 - [ ] [Verifiable behavior]
-## Estimate
+<span class="hd">## Estimate</span>
 - Complexity: S / M / L / XL
 - Effort: X days/sprints
-```
 
-After generating, instruct: <span class="h">/sdd-plan</span>
+After generating, instruct: /sdd-plan
 
-Context: <span class="v">$ARGUMENTS</span></pre>
-  </div>
-</div>
+Context: <span class="ph">$ARGUMENTS</span></pre>
+      </div>
 
-<!-- /sdd-plan -->
-<div class="card c-rust" id="sdd-plan">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">SDD · 005</div>
-      <div class="card-title">Plan <span class="cmd">/sdd-plan</span></div>
-      <div class="tags"><span class="tag t-r">📋 Tasks</span><span class="tag t-w">🏗️ Architecture</span><span class="tag t-c">⚠️ Risks</span></div>
-    </div>
-    <div class="usage"><strong>Usage</strong><code>/sdd-plan</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Reads the spec and generates the full execution plan — broken-down tasks, architecture decisions, trade-offs, and mapped risks.</p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-plan/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-sdd-plan')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-sdd-plan"><span class="c">---</span>
-<span class="k">name</span>: sdd-plan
-<span class="k">description</span>: Generates execution plan, tasks and architecture
-<span class="c">---</span>
+      <!-- sdd-plan -->
+      <div class="card" id="sdd-plan">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">SDD · 005</span>
+              <div class="card-tags">
+                <span class="ctag">📋 Tasks</span>
+                <span class="ctag">🏗️ Architecture</span>
+                <span class="ctag">⚠️ Risks</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/sdd-plan</span>
+              <span class="card-name">Plan</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/sdd-plan</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Reads the spec and generates the full execution plan — broken-down tasks, architecture decisions, trade-offs, and mapped risks.
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/sdd-plan/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-sdd-plan')">Copy</button>
+        </div>
+        <pre id="code-sdd-plan"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">sdd-plan</span>
+<span class="kw">description</span>: <span class="str">Generates execution plan, tasks and architecture</span>
+<span class="cm">---</span>
 
-Read `.sdd/spec.md` and `.sdd/hub.md`. Generate `.sdd/plan.md`.
+Read <span class="cmd">`.sdd/spec.md`</span> and <span class="cmd">`.sdd/hub.md`</span>. Generate <span class="cmd">`.sdd/plan.md`</span>.
 
-```md
-# Execution Plan — [Name]
+<span class="hd"># Execution Plan — [Name]</span>
 
-## Solution Architecture
+<span class="hd">## Solution Architecture</span>
 [Technical approach + ASCII diagram if needed]
 
-## Technical Decisions
+<span class="hd">## Technical Decisions</span>
 | Decision | Alternatives | Reason |
 |----------|-------------|--------|
 
-## Tasks
-### Phase 1 — [Name]
+<span class="hd">## Tasks</span>
+<span class="hd">### Phase 1 — [Name]</span>
 - [ ] [TASK] Description · estimate: Xh
 
-## Risks and Dependencies
+<span class="hd">## Risks and Dependencies</span>
 | Risk | Prob. | Impact | Mitigation |
 |------|-------|--------|------------|
 
-## Execution order
+<span class="hd">## Execution order</span>
 1. ...
-```
 
-Update the hub and instruct: <span class="h">/sdd-build</span></pre>
-  </div>
-</div>
+Update the hub and instruct: /sdd-build</pre>
+      </div>
 
-<!-- /sdd-build -->
-<div class="card c-sage" id="sdd-build">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">SDD · 006</div>
-      <div class="card-title">Build <span class="cmd">/sdd-build</span></div>
-      <div class="tags"><span class="tag t-s">⚙️ Dev</span><span class="tag t-c">✅ Tasks</span><span class="tag t-w">🧪 Tests</span></div>
-    </div>
-    <div class="usage"><strong>Usage</strong><code>/sdd-build [task]</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Starts development following the /sdd-plan. Executes task by task, updates the hub with progress, and flags blockers.</p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-build/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-sdd-build')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-sdd-build"><span class="c">---</span>
-<span class="k">name</span>: sdd-build
-<span class="k">description</span>: Starts development following the SDD plan
-<span class="k">allowed-tools</span>: Read, Write, Bash, Grep, Glob
-<span class="c">---</span>
+      <!-- sdd-build -->
+      <div class="card" id="sdd-build">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">SDD · 006</span>
+              <div class="card-tags">
+                <span class="ctag">⚙️ Dev</span>
+                <span class="ctag">✅ Tasks</span>
+                <span class="ctag">🧪 Tests</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/sdd-build</span>
+              <span class="card-name">Build</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/sdd-build [task]</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Starts development following the /sdd-plan. Executes task by task, updates the hub with progress, and flags blockers.
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/sdd-build/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-sdd-build')">Copy</button>
+        </div>
+        <pre id="code-sdd-build"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">sdd-build</span>
+<span class="kw">description</span>: <span class="str">Starts development following the SDD plan</span>
+<span class="kw">allowed-tools</span>: <span class="str">Read, Write, Bash, Grep, Glob</span>
+<span class="cm">---</span>
 
-Read `.sdd/plan.md` and `.sdd/spec.md` before starting.
+Read <span class="cmd">`.sdd/plan.md`</span> and <span class="cmd">`.sdd/spec.md`</span> before starting.
 Execute tasks in the order defined in the plan.
 
-<span class="e">## Before each task</span>
+<span class="hd">## Before each task</span>
 
 1. Read the task and confirm understanding
 2. Check that dependencies are complete
 
-<span class="e">## During development</span>
+<span class="hd">## During development</span>
 
 - Follow project patterns (linting, naming, structure)
 - Write or update tests for each change
 - If you hit a blocker or an unplanned decision:
-  → Document in `.sdd/decisions/YYYY-MM-DD-name.md`
+  → Document in <span class="cmd">`.sdd/decisions/YYYY-MM-DD-name.md`</span>
   → Flag before proceeding
 
-<span class="e">## After each task</span>
+<span class="hd">## After each task</span>
 
-Update `.sdd/hub.md` marking progress.
+Update <span class="cmd">`.sdd/hub.md`</span> marking progress.
 If a specific task is passed, focus only on it.
 
-Task: <span class="v">$ARGUMENTS</span></pre>
-  </div>
-</div>
+Task: <span class="ph">$ARGUMENTS</span></pre>
+      </div>
 
-<!-- /sdd-hub -->
-<div class="card c-warm" id="sdd-hub">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">SDD · 007</div>
-      <div class="card-title">Hub <span class="cmd">/sdd-hub</span></div>
-      <div class="tags"><span class="tag t-w">🗺️ Overview</span><span class="tag t-s">📊 Status</span></div>
-    </div>
-    <div class="usage"><strong>Usage</strong><code>/sdd-hub</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Displays and updates the SDD central index — status of each stage, decisions made, next steps, and links to all generated documents.</p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-hub/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-sdd-hub')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-sdd-hub"><span class="c">---</span>
-<span class="k">name</span>: sdd-hub
-<span class="k">description</span>: Displays and updates the SDD central index
-<span class="k">allowed-tools</span>: Read, Write
-<span class="c">---</span>
+      <!-- sdd-hub -->
+      <div class="card" id="sdd-hub">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">SDD · 007</span>
+              <div class="card-tags">
+                <span class="ctag">🗺️ Overview</span>
+                <span class="ctag">📊 Status</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/sdd-hub</span>
+              <span class="card-name">Hub</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/sdd-hub</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Displays and updates the SDD central index — status of each stage, decisions made, next steps, and links to all generated documents.
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/sdd-hub/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-sdd-hub')">Copy</button>
+        </div>
+        <pre id="code-sdd-hub"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">sdd-hub</span>
+<span class="kw">description</span>: <span class="str">Displays and updates the SDD central index</span>
+<span class="kw">allowed-tools</span>: <span class="str">Read, Write</span>
+<span class="cm">---</span>
 
-Read all files in `.sdd/` and update the hub.
+Read all files in <span class="cmd">`.sdd/`</span> and update the hub.
 
-```md
-# SDD Hub — [Project Name]
+<span class="hd"># SDD Hub — [Project Name]</span>
 
-**Overall status:** 🟡 In progress | ✅ Done | 🔴 Blocked
-**Last updated:** [date]
+<span class="kw">**Overall status:**</span> 🟡 In progress | ✅ Done | 🔴 Blocked
+<span class="kw">**Last updated:**</span> [date]
 
-## Stages
+<span class="hd">## Stages</span>
 | Stage      | Status | File         |
 |------------|--------|--------------|
 | /sdd-spec  | ✅     | .sdd/spec.md |
 | /sdd-plan  | ✅     | .sdd/plan.md |
 | /sdd-build | 🟡     | —            |
 
-## Task progress
+<span class="hd">## Task progress</span>
 [current checklist from plan.md]
 
-## Logged decisions
+<span class="hd">## Logged decisions</span>
 - [date] — [Decision] → .sdd/decisions/...
 
-## Active risks
+<span class="hd">## Active risks</span>
 [risks not yet mitigated]
 
-## Next step
+<span class="hd">## Next step</span>
 → [clear instruction]
-```
 
 Display the hub and signal the next step.</pre>
-  </div>
-</div>
+      </div>
 
-<!-- /sdd-fix -->
-<div class="card c-rust" id="sdd-fix">
-  <div class="card-bar"></div>
-  <div class="card-top">
-    <div>
-      <div class="card-num">SDD · 008</div>
-      <div class="card-title">Fix <span class="cmd">/sdd-fix</span></div>
-      <div class="tags"><span class="tag t-r">🐛 Fix</span><span class="tag t-d">📝 Log</span><span class="tag t-s">✅ Validation</span></div>
-    </div>
-    <div class="usage"><strong>Usage</strong><code>/sdd-fix [problem]</code></div>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Description</div>
-    <p class="desc">Fixes a specific problem found during or after /sdd-build. Logs the fix as a decision in the hub for traceability.</p>
-  </div>
-  <div class="sec">
-    <div class="sec-lbl">Skill — <code style="color:var(--ink3)">~/.claude/skills/sdd-fix/SKILL.md</code></div>
-    <div class="code-header"><span></span>
-      <button class="copy-btn" onclick="cp(this,'c-sdd-fix')"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
-    </div>
-    <pre id="c-sdd-fix"><span class="c">---</span>
-<span class="k">name</span>: sdd-fix
-<span class="k">description</span>: Fixes a specific problem and logs it in the SDD
-<span class="k">allowed-tools</span>: Read, Write, Bash, Grep
-<span class="c">---</span>
+      <!-- sdd-fix -->
+      <div class="card" id="sdd-fix">
+        <div class="card-top">
+          <div>
+            <div class="card-meta">
+              <span class="card-id">SDD · 008</span>
+              <div class="card-tags">
+                <span class="ctag">🐛 Fix</span>
+                <span class="ctag">📝 Log</span>
+                <span class="ctag">✅ Validation</span>
+              </div>
+            </div>
+            <div class="card-title-row">
+              <span class="card-cmd">/sdd-fix</span>
+              <span class="card-name">Fix</span>
+            </div>
+            <div class="card-usage"><span>Usage</span> &nbsp;/sdd-fix [problem]</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Fixes a specific problem found during or after /sdd-build. Logs the fix as a decision in the hub for traceability.
+        </div>
+        <div class="card-code-header">
+          <span class="code-path">Skill — <span>~/.claude/skills/sdd-fix/SKILL.md</span></span>
+          <button class="copy-btn" onclick="cp(this, 'code-sdd-fix')">Copy</button>
+        </div>
+        <pre id="code-sdd-fix"><span class="cm">---</span>
+<span class="kw">name</span>: <span class="str">sdd-fix</span>
+<span class="kw">description</span>: <span class="str">Fixes a specific problem and logs it in the SDD</span>
+<span class="kw">allowed-tools</span>: <span class="str">Read, Write, Bash, Grep</span>
+<span class="cm">---</span>
 
-Read `.sdd/spec.md` and `.sdd/plan.md` before acting.
+Read <span class="cmd">`.sdd/spec.md`</span> and <span class="cmd">`.sdd/plan.md`</span> before acting.
 
-<span class="e">## Diagnosis</span>
+<span class="hd">## Diagnosis</span>
 
 1. Understand the problem: where, when, impact
 2. Identify the root cause (not the symptom)
 3. Check if it was listed in risks
 4. Confirm diagnosis before fixing
 
-<span class="e">## Fix</span>
+<span class="hd">## Fix</span>
 
 - Implement the minimal necessary fix
 - Do not refactor unrelated code
 - Add tests that cover the scenario
 - Verify it doesn't break other flows
 
-<span class="e">## Log</span>
+<span class="hd">## Log</span>
 
-Create `.sdd/decisions/[date]-fix-[name].md`:
+Create <span class="cmd">`.sdd/decisions/[date]-fix-[name].md`</span>:
 
-```md
-# Fix — [Name]
-**Problem:** ...
-**Root cause:** ...
-**Solution:** ...
-**Tests added:** yes/no
-```
+<span class="hd"># Fix — [Name]</span>
+<span class="kw">**Problem:**</span> ...
+<span class="kw">**Root cause:**</span> ...
+<span class="kw">**Solution:**</span> ...
+<span class="kw">**Tests added:**</span> yes/no
 
-Problem: <span class="v">$ARGUMENTS</span></pre>
-  </div>
+Problem: <span class="ph">$ARGUMENTS</span></pre>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ARCH INTERVIEW -->
+  <section class="section" id="arch-interview">
+    <div class="section-header">
+      <span class="section-id">kit · 01</span>
+      <span class="section-name">Architecture </span>
+      <span class="section-badge badge-amber">19 perguntas · 6 frames · 1 prompt</span>
+    </div>
+
+    <!-- CONTEXTO -->
+    <div style="margin-bottom:2rem" id="arch-contexto">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--line)">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:0.1em">CTX</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--text)">Contexto do problema</span>
+        <span class="section-badge badge-green" style="margin-left:auto">Prioridade alta</span>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-top">
+            <div>
+              <div class="card-meta"><span class="card-id">CTX · 001</span></div>
+              <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Qual problema estamos resolvendo?</span></div>
+              <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Objetivo de negócio antes de qualquer decisão técnica</div>
+            </div>
+          </div>
+          <div class="card-desc">Entender o "porquê" evita desenhar a solução certa para o problema errado. Uma resposta vaga aqui é sinal de que o problema ainda não está bem definido — e isso já é uma informação valiosa.</div>
+        </div>
+        <div class="card">
+          <div class="card-top">
+            <div>
+              <div class="card-meta"><span class="card-id">CTX · 002</span></div>
+              <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Quem são os usuários/clientes desse sistema?</span></div>
+              <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Volume, perfil técnico, localização, frequência de uso</div>
+            </div>
+          </div>
+          <div class="card-desc">Usuário interno de backoffice tem tolerância a latência completamente diferente de um cliente final no mobile. O perfil define requisitos não-funcionais inteiros.</div>
+        </div>
+        <div class="card">
+          <div class="card-top">
+            <div>
+              <div class="card-meta"><span class="card-id">CTX · 003</span></div>
+              <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Qual é o estágio atual? Greenfield, migração ou refactoring?</span></div>
+              <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Define a liberdade de decisão arquitetural</div>
+            </div>
+          </div>
+          <div class="card-desc">Greenfield permite começar do ideal. Migração exige estratégia de convivência com o legado. Refactoring tem restrições de compatibilidade. São contextos completamente distintos.</div>
+        </div>
+        <div class="card">
+          <div class="card-top">
+            <div>
+              <div class="card-meta"><span class="card-id">CTX · 004</span></div>
+              <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Existe stack ou tecnologia já definida/obrigatória?</span></div>
+              <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Evita propor algo que já está fora de cogitação</div>
+            </div>
+          </div>
+          <div class="card-desc">Nada mais frustrante do que elaborar uma solução brilhante em Kafka só para descobrir que a empresa já tem contrato com RabbitMQ. Pergunte antes de propor.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESCALA -->
+    <div style="margin-bottom:2rem" id="arch-escala">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--line)">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:0.1em">ESC</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--text)">Escala e requisitos não-funcionais</span>
+        <span class="section-badge badge-blue" style="margin-left:auto">Técnico</span>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">ESC · 001</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Qual é a expectativa de volume de requisições/dados?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Centenas, milhares ou milhões por dia?</div>
+          </div></div>
+          <div class="card-desc">Ordens de magnitude importam. Uma solução para 1k req/dia e uma para 10M req/dia são arquiteturas completamente diferentes. Esteja confortável dizendo "para essa escala pensaria em X, mas para Y escala mudaria para Z".</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">ESC · 002</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Qual a disponibilidade esperada? Existe SLA definido?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">99%? 99,9%? Isso muda completamente a decisão de infra</div>
+          </div></div>
+          <div class="card-desc">99% = ~87h de downtime/ano. 99,9% = ~8h. 99,99% = ~52min. Cada 9 a mais custa exponencialmente mais em complexidade e infra. A resposta guia decisões de redundância, failover e DR.</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">ESC · 003</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">A carga é previsível ou tem picos? Existe sazonalidade?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Impacta estratégia de auto-scaling e provisionamento</div>
+          </div></div>
+          <div class="card-desc">Black Friday, final de mês, horário de pico — picos previsíveis pedem estratégias diferentes de picos aleatórios. Scaling reativo vs. proativo, warm pools, scheduled scaling.</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">ESC · 004</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Quais são as restrições de latência aceitável?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Tempo de resposta esperado para o usuário final</div>
+          </div></div>
+          <div class="card-desc">P95 ou P99? Latência média esconde outliers críticos. A resposta determina se cabe cache, CDN, se a comunicação pode ser assíncrona, e onde os serviços devem ser posicionados geograficamente.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEGURANÇA -->
+    <div style="margin-bottom:2rem" id="arch-seguranca">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--line)">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:0.1em">SEC</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--text)">Segurança e conformidade</span>
+        <span class="section-badge badge-amber" style="margin-left:auto">Contextual</span>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">SEC · 001</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Há dados sensíveis ou regulatórios envolvidos?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">LGPD, PCI-DSS, HIPAA — muda autenticação, criptografia e auditoria</div>
+          </div></div>
+          <div class="card-desc">Dados de cartão exigem PCI-DSS e mudam onde e como você armazena. LGPD afeta retenção, anonimização e direito ao esquecimento. Não dá para ignorar na arquitetura.</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">SEC · 002</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Quem deve ter acesso ao quê? Existe multi-tenancy?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Define a estratégia de autenticação e autorização</div>
+          </div></div>
+          <div class="card-desc">Multi-tenancy muda tudo: isolamento de banco, escopos de token, billing, logs de auditoria. Um RBAC simples resolve um caso; permissões granulares com tenants exigem outro design completamente.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPERAÇÃO -->
+    <div style="margin-bottom:2rem" id="arch-operacao">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--line)">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:0.1em">OPS</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--text)">Operação e equipe</span>
+        <span class="section-badge badge-amber" style="margin-left:auto">Contextual</span>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">OPS · 001</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Qual é o tamanho e estrutura da equipe de engenharia?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Microsserviços com 3 devs pode ser over-engineering</div>
+          </div></div>
+          <div class="card-desc">Conway's Law é real: a arquitetura vai espelhar a estrutura de comunicação da equipe. A solução precisa ser sustentável para quem vai mantê-la no dia a dia.</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">OPS · 002</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Como é o modelo de deploy hoje? Existe CI/CD?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Frequência de releases, rollback, feature flags</div>
+          </div></div>
+          <div class="card-desc">Uma equipe que deploya uma vez por sprint tem necessidades diferentes de uma que faz deploy contínuo. A maturidade de CI/CD atual é o ponto de partida real, não o ideal.</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">OPS · 003</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Existe observabilidade hoje? Logs, métricas, tracing?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Se não existe, precisa entrar como requisito da solução</div>
+          </div></div>
+          <div class="card-desc">Sistemas sem observabilidade são caixas-pretas. Propor microsserviços sem mencionar distributed tracing é propor algo impossível de operar. Logging, métricas e tracing são requisitos de primeira classe.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTEGRAÇÕES -->
+    <div style="margin-bottom:2rem" id="arch-integracoes">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--line)">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:0.1em">INT</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--text)">Integrações e dependências</span>
+        <span class="section-badge badge-blue" style="margin-left:auto">Técnico</span>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">INT · 001</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Quais sistemas externos esse serviço precisa integrar?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">APIs de terceiros, legados, parceiros</div>
+          </div></div>
+          <div class="card-desc">Integrações com sistemas que você não controla são riscos. SLA do parceiro, disponibilidade, contratos de API, circuit breakers — tudo isso precisa aparecer na arquitetura. Ignorar integrações é a causa #1 de surpresas em produção.</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">INT · 002</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">A comunicação entre serviços é síncrona ou pode ser assíncrona?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Define se precisa de fila/mensageria ou chamadas diretas</div>
+          </div></div>
+          <div class="card-desc">Comunicação síncrona acopla disponibilidade — se B cai, A falha. Assíncrona desacopla, mas adiciona eventual consistency, dead-letter queues e idempotência. O negócio tolera atraso ou não?</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">INT · 003</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Qual o modelo de dados hoje? Existe banco legado?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Impacta decisão de banco e estratégia de migração</div>
+          </div></div>
+          <div class="card-desc">Migrar um Oracle com 15 anos de stored procedures é um projeto à parte. A decisão de banco nova precisa conviver com o legado durante a transição — dual-write, strangler fig, event sourcing.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEGÓCIO -->
+    <div style="margin-bottom:2rem" id="arch-negocio">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--line)">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:0.1em">BIZ</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--text)">Restrições de negócio</span>
+        <span class="section-badge badge-green" style="margin-left:auto">Prioridade alta</span>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">BIZ · 001</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Existe prazo ou MVP definido?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Trade-off entre solução ideal e velocidade de entrega</div>
+          </div></div>
+          <div class="card-desc">Um MVP em 6 semanas pede decisões diferentes de uma plataforma com 12 meses de runway. A arquitetura ideal para longo prazo pode ser inviável para o prazo dado.</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">BIZ · 002</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Há restrição de orçamento de infra?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Cloud gerenciado tem custo diferente de self-hosted</div>
+          </div></div>
+          <div class="card-desc">RDS gerenciado vs. PostgreSQL self-hosted em EC2. EKS vs. instâncias simples. Managed Kafka vs. SQS. Cada escolha tem implicação de custo e complexidade operacional.</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">BIZ · 003</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--amber);font-size:13px">Quais são os maiores riscos ou pontos de falha conhecidos hoje?</span></div>
+            <div class="card-usage" style="color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:4px">Geralmente revela o real problema que querem resolver</div>
+          </div></div>
+          <div class="card-desc">Essa pergunta quase sempre revela o problema real. "O sistema cai todo final de mês" ou "a integração com o banco demora 30s" define prioridades melhor do que qualquer requisito escrito.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIRO BOARD -->
+    <div id="arch-miro">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--line)">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:0.1em">MIRO</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--text)">Estrutura de board · Miro</span>
+        <span class="section-badge badge-purple" style="margin-left:auto">6 frames</span>
+      </div>
+
+      <div class="cards" style="margin-bottom:1.5rem">
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">FRAME · 01</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--purple);font-size:13px">Contexto do problema</span></div>
+          </div></div>
+          <div class="card-desc">Qual problema? Para quem? Por quê agora? Estágio atual (greenfield / migração / refactoring).</div>
+          <div class="card-checklist">
+            <div class="cl-label">Stickies</div>
+            <div class="cl-item" style="color:var(--amber)">problema de negócio</div>
+            <div class="cl-item" style="color:var(--amber)">usuários afetados</div>
+            <div class="cl-item" style="color:var(--amber)">estágio atual</div>
+            <div class="cl-item" style="color:var(--amber)">restrições de stack</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">FRAME · 02</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--purple);font-size:13px">Usuários e escala</span></div>
+          </div></div>
+          <div class="card-desc">Volume de usuários, frequência de uso, picos, crescimento esperado.</div>
+          <div class="card-checklist">
+            <div class="cl-label">Stickies</div>
+            <div class="cl-item" style="color:var(--blue)">vol. req/dia</div>
+            <div class="cl-item" style="color:var(--blue)">SLA esperado</div>
+            <div class="cl-item" style="color:var(--blue)">picos / sazonalidade</div>
+            <div class="cl-item" style="color:var(--blue)">latência aceitável</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">FRAME · 03</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--purple);font-size:13px">Requisitos não-funcionais</span></div>
+          </div></div>
+          <div class="card-desc">Disponibilidade, segurança, conformidade, observabilidade, deploy.</div>
+          <div class="card-checklist">
+            <div class="cl-label">Stickies</div>
+            <div class="cl-item" style="color:var(--amber)">LGPD / PCI / HIPAA</div>
+            <div class="cl-item" style="color:var(--amber)">multi-tenancy</div>
+            <div class="cl-item" style="color:var(--amber)">CI/CD atual</div>
+            <div class="cl-item" style="color:var(--amber)">observabilidade</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">FRAME · 04</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--purple);font-size:13px">Decisões arquiteturais e trade-offs</span></div>
+          </div></div>
+          <div class="card-desc">Cada decisão com alternativas consideradas e justificativa. Formato ADR simplificado: decisão | alternativas | justificativa | trade-offs.</div>
+          <div class="card-checklist">
+            <div class="cl-label">Stickies</div>
+            <div class="cl-item" style="color:var(--green)">decisão tomada</div>
+            <div class="cl-item" style="color:var(--amber)">alternativas descartadas</div>
+            <div class="cl-item" style="color:var(--red)">trade-offs aceitos</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">FRAME · 05</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--purple);font-size:13px">Diagrama de componentes</span></div>
+          </div></div>
+          <div class="card-desc">Blocos, serviços, integrações e fluxo de dados. Marque síncrono vs. assíncrono. Indique fronteiras de domínio.</div>
+          <div class="card-checklist">
+            <div class="cl-label">Stickies</div>
+            <div class="cl-item" style="color:var(--blue)">serviços internos</div>
+            <div class="cl-item" style="color:var(--blue)">integrações externas</div>
+            <div class="cl-item" style="color:var(--blue)">banco de dados</div>
+            <div class="cl-item" style="color:var(--blue)">filas / eventos</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div>
+            <div class="card-meta"><span class="card-id">FRAME · 06</span></div>
+            <div class="card-title-row"><span class="card-cmd" style="color:var(--purple);font-size:13px">Riscos e perguntas em aberto</span></div>
+          </div></div>
+          <div class="card-desc">O que ainda não foi respondido? O que pode dar errado? Próximos passos e dependências externas.</div>
+          <div class="card-checklist">
+            <div class="cl-label">Stickies</div>
+            <div class="cl-item" style="color:var(--red)">risco crítico</div>
+            <div class="cl-item" style="color:var(--red)">dependência externa</div>
+            <div class="cl-item" style="color:var(--amber)">pergunta em aberto</div>
+            <div class="cl-item" style="color:var(--green)">próximo passo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROMPT MIRO -->
+      <div style="background:var(--bg1);border:1px solid var(--line2);border-radius:var(--r);overflow:hidden">
+        <div class="card-code-header">
+          <div>
+            <span class="code-path" style="display:block;margin-bottom:2px">Prompt · Claude</span>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--purple)">/gerar-board-miro</span>
+          </div>
+          <button class="copy-btn" onclick="cp(this, 'code-miro-prompt')">Copy</button>
+        </div>
+        <pre id="code-miro-prompt"><span class="cm">Com base nas respostas abaixo da minha entrevista de arquitetura,</span>
+<span class="cm">gere a estrutura completa de um board no Miro.</span>
+
+Para cada frame, liste os stickies, textos e perguntas em aberto
+que devem aparecer. Seja específico — não invente dados.
+
+<span class="hd">Frames para gerar:</span>
+<span class="str">1.</span> Contexto do problema
+<span class="str">2.</span> Usuários e escala
+<span class="str">3.</span> Requisitos não-funcionais
+<span class="str">4.</span> Decisões arquiteturais e trade-offs
+   <span class="cm">(formato: decisão | alternativas | justificativa | trade-offs)</span>
+<span class="str">5.</span> Diagrama de componentes
+   <span class="cm">(descreva blocos, serviços e conexões em texto)</span>
+<span class="str">6.</span> Riscos e perguntas em aberto
+
+Ao final, liste 3–5 perguntas que ainda precisam ser respondidas
+antes de fechar a arquitetura.
+
+<span class="hd">---</span>
+<span class="hd">Minhas respostas:</span>
+
+<span class="ph">[CONTEXTO E PROBLEMA]</span>
+...
+
+<span class="ph">[USUÁRIOS E VOLUME]</span>
+...
+
+<span class="ph">[REQUISITOS NÃO-FUNCIONAIS]</span>
+...
+
+<span class="ph">[SEGURANÇA E CONFORMIDADE]</span>
+...
+
+<span class="ph">[STACK E INTEGRAÇÕES]</span>
+...
+
+<span class="ph">[EQUIPE E OPERAÇÃO]</span>
+...
+
+<span class="ph">[PRAZO E ORÇAMENTO]</span>
+...
+
+<span class="ph">[RISCOS E PONTOS CRÍTICOS]</span>
+...</pre>
+      </div>
+    </div>
+
+  </section>
+
 </div>
 
-</div><!-- /cards SDD -->
-
 <footer>
-  <div class="fl">Prompt Dictionary · 2026</div>
-  <div class="fr">
-    <span class="count">12</span>
-    <span class="count-label">prompts</span>
-  </div>
+  <span>Prompt Dictionary · 2026</span>
+  <span>12 prompts · 19 perguntas · Claude Code</span>
 </footer>
 
-</div><!-- /wrap -->
 <script>
 function cp(btn, id) {
-  navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
+  const el = document.getElementById(id);
+  const text = el ? el.innerText : '';
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
     btn.classList.add('ok');
-    btn.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
-    setTimeout(() => {
-      btn.classList.remove('ok');
-      btn.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy';
-    }, 2000);
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('ok'); }, 2000);
   });
 }
 </script>
